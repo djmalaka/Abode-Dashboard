@@ -1345,6 +1345,8 @@ This is the **advanced** button – a full “system control” popup that:
 
 **Kill gate & PIN**
 
+<img width="1886" height="1323" alt="image" src="https://github.com/user-attachments/assets/1af117a1-4e0b-475c-b409-28e585487e55" />
+
 - `input_boolean.automation_kill_gate` – controls whether the keypad is shown.
 - `sensor.automation_kill_pin_dots` – displays `••••` style dots in the UI.
 - `sensor.automation_kill_pin_status` – text feedback:
