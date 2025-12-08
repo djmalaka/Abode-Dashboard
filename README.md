@@ -1,5 +1,8 @@
 ### CLOCK WEATHER CARD
 
+<img width="546" height="409" alt="image" src="https://github.com/user-attachments/assets/f47f4701-2a35-4325-925f-70505247392d" />
+
+
 **Purpose**
 
 Glassmorphic header block for the Home dashboard that:
