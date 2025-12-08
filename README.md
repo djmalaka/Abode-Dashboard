@@ -154,7 +154,7 @@ Glassmorphic header block for the Home dashboard that:
   - A 12-hour temperature line chart with glowing gradient and animated path.
 
 ---
-
+### Required
 **Required custom cards / plugins**
 
 Install via HACS (or equivalent):
@@ -187,7 +187,7 @@ Install via HACS (or equivalent):
 
 **Required assets**
 
-# Animated SVG weather icons 
+Animated SVG weather icons 
 in `/config/www` (exposed as `/local/...`) - Provided in the repo
 
 - Line icons for the big header:
@@ -197,7 +197,7 @@ in `/config/www` (exposed as `/local/...`) - Provided in the repo
 
 You can use any icon set as long as you update the paths in the JavaScript blocks as appropriate to your setup.
 
-# 🧠 Backend Setup (Required)
+🧠 Backend Setup (Required)
 
 The clock-weather card uses a few *template sensors* and one *REST sensor* for Tomorrow.io.
 
