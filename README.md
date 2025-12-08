@@ -1,5 +1,15 @@
 # ✨ Abode Dashboard (Home Assistant)
-
+<div style="
+  background: linear-gradient(90deg, #8AB4F8, #6A7FF8);
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+">
+  Clock & Weather Card
+</div>
 ![Screenshot_20251208_223111_Fully Kiosk Browser](https://github.com/user-attachments/assets/0ee04375-9042-4334-9e10-87b6ade4f304)
 
 **Conceptualised & designed by Malaka Jayawardene.**
