@@ -4,9 +4,8 @@
 
 **Conceptualised, designed and coded by Malaka Jayawardene.**
 
-_Disclaimer:_
 **Important:** This is a highly user-specific Home Assistant dashboard.  
-The YAML in this repository will **not** function out-of-the-box on other systems due to unique helpers, sensors, custom logic, and tailored UI behaviour._
+The YAML in this repository will **not** function out-of-the-box on other systems due to unique helpers, sensors, custom logic, and tailored UI behaviour.
 
 Instead, **use this repo as a guide** to learn and adopt:
 - Styling techniques  
@@ -41,7 +40,7 @@ Each folder contains a self-contained part of the UI:
 - **Media Station** — speaker groups, requests, transfers 
 - **Room Cards** — glassmorphic room tiles with presence, lights, climate, blinds
 - **Location Card** - Based on a sleek combination of iOS shortcuts and webhooks (will post a separate guide on this in due course as currently only YAML behind the card is included)
-- **Surveillance Surveillance** — live camera streams & motion states
+- **Surveillance** — live camera streams & motion states
 - **Housekeepers Card** — robot vacuums & mower control    
 - **Quickfire Controls** — lights, climate, blinds, automations
 - **Scripts & Helpers** — logic powering UI behaviour (will be updating this in due course)
