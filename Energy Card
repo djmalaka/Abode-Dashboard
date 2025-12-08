@@ -1,0 +1,202 @@
+# energy_card.yaml
+# Purpose:
+#   Glassmorphic energy summary card showing Electricity & Gas current cost
+#   and a 24-hour animated cost graph using mini-graph-card.
+#
+# Dependencies (custom cards):
+#   - custom:stack-in-card
+#   - custom:button-card
+#   - custom:mini-graph-card
+#   - card-mod
+#
+# Required entities:
+#   - sensor.electricity                  (current electricity cost)
+#   - sensor.gas                           (current gas cost)
+#   - sensor.electricity_cost_today        (24h electricity graph)
+#   - sensor.gas_cost_today                (24h gas graph)
+#
+# Adapt for your setup:
+#   - Replace entity IDs above with your own energy sensors.
+#   - Edit color values (#47C1E8 and #ffaa00) to restyle the card.
+#   - Adjust background gradient as needed.
+
+
+type: custom:stack-in-card
+card_mod:
+  style: |
+    ha-card {
+      width: 100% !important;
+      margin: 0 auto;
+      padding: 8px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, rgba(151, 87, 167, 0.25), rgba(75, 124, 132, 0.25));
+      border-radius: 24px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow:
+        0 1px 6px rgba(0, 0, 0, 0.18),
+        inset 0 0 6px rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    @keyframes pulseBlue {
+      0%   { transform: scale(1); opacity: 1; }
+      50%  { transform: scale(1.04); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes pulseOrange {
+      0%   { transform: scale(1); opacity: 1; }
+      50%  { transform: scale(1.04); opacity: 0.85; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: custom:button-card
+        entity: sensor.electricity
+        show_icon: false
+        show_name: false
+        show_state: false
+        custom_fields:
+          content: |
+            [[[
+              let val = parseFloat(entity?.state);
+              if (isNaN(val)) val = 0;
+              const price = '£' + val.toFixed(2);
+              return `
+                <div style="
+                  display:flex;
+                  align-items:center;
+                  justify-content:flex-start;
+                  gap:6px;
+                  margin-left:6px;
+                ">
+                  <ha-icon icon="mdi:lightning-bolt-circle"
+                    style="
+                      color:#47C1E8;
+                      width:20px;
+                      height:20px;
+                      filter:drop-shadow(0 0 2px rgba(71,193,232,0.6));
+                    ">
+                  </ha-icon>
+                  <span style="font-weight:bold;font-size:13px;color:#47C1E8;">
+                    Electricity
+                  </span>
+                  <span style="font-weight:bold;font-size:13px;color:#47C1E8;">|</span>
+                  <span style="font-weight:bold;font-size:13px;color:#47C1E8;">
+                    ${price}
+                  </span>
+                </div>
+              `;
+            ]]]
+        styles:
+          card:
+            - background: rgba(255,255,255,0.05)
+            - border-radius: 1em
+            - box-shadow: inset 0 0 10px rgba(71, 193, 232, 0.4)
+            - padding: 6px 16px
+            - display: flex
+            - align-items: center
+            - justify-content: flex-start
+          custom_fields:
+            content:
+              - width: 100%
+      - type: custom:button-card
+        entity: sensor.gas
+        show_icon: false
+        show_name: false
+        show_state: false
+        custom_fields:
+          content: |
+            [[[
+              let val = parseFloat(entity?.state);
+              if (isNaN(val)) val = 0;
+              const price = '£' + val.toFixed(2);
+              return `
+                <div style="
+                  display:flex;
+                  align-items:center;
+                  justify-content:flex-start;
+                  gap:6px;
+                ">
+                  <ha-icon icon="mdi:fire-circle"
+                    style="
+                      color:#ffaa00;
+                      width:20px;
+                      height:20px;                                
+                      filter:drop-shadow(0 0 2px rgba(255,170,0,0.5));
+                    ">
+                  </ha-icon>
+                  <span style="font-weight:bold;font-size:13px;color:#ffaa00;">
+                    Gas
+                  </span>
+                  <span style="font-weight:bold;font-size:13px;color:#ffaa00;">|</span>
+                  <span style="font-weight:bold;font-size:13px;color:#ffaa00;">
+                    ${price}
+                  </span>
+                </div>
+              `;
+            ]]]
+        styles:
+          card:
+            - background: rgba(255,255,255,0.05)
+            - border-radius: 1em
+            - box-shadow: inset 0 0 10px rgba(255, 170, 0, 0.3)
+            - padding: 6px 30px
+            - display: flex
+            - align-items: center
+            - justify-content: flex-start
+          custom_fields:
+            content:
+              - width: 100%
+  - type: conditional
+    conditions:
+      - entity: sensor.electricity_cost_today
+        state_not: unknown
+      - entity: sensor.gas_cost_today
+        state_not: unknown
+    card:
+      type: custom:mini-graph-card
+      entities:
+        - entity: sensor.electricity_cost_today
+          name: Electricity
+          color: "#47C1E8"
+        - entity: sensor.gas_cost_today
+          name: Gas
+          color: "#ffaa00"
+      hours_to_show: 24
+      points_per_hour: 1
+      animate: true
+      line_width: 3
+      smoothing: true
+      show:
+        name: false
+        icon: false
+        state: false
+        legend: false
+        labels: true
+        fill: fade
+      font_size: 90
+      card_mod:
+        style: |
+          ha-card {
+            background: none !important;
+            box-shadow: none !important;
+            border-radius: 0 0 14px 14px !important;
+            overflow: hidden;
+            padding-bottom: 8px;
+            margin-top: -24px;
+            
+          }
+          .graph {
+            border-radius: 0 0 14px 14px;
+            overflow: hidden;
+          }
+
+          /* Delay the path animation by 1.8s */
+          .graph svg path {
+            animation-delay: 4s !important;
+            animation-duration: 2.5s !important;
+          }
