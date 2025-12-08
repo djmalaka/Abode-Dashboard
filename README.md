@@ -256,6 +256,7 @@ Features:
 ---
 
 **3. Music Request Station (popup 2 – 🎵)**
+
 <img width="709" height="1284" alt="image" src="https://github.com/user-attachments/assets/3fc7a2c4-b77b-4f11-9c72-e8dd134a0fa2" />
 
 Helpers:
@@ -389,6 +390,8 @@ Behaviour:
 ---
 
 ### ROOM CARDS
+
+<img width="571" height="825" alt="image" src="https://github.com/user-attachments/assets/82814fa8-5606-467d-9b99-a27d711f86df" />
 
 This file defines the complete set of glassmorphic **room summary cards** used across the home dashboard.  
 They provide presence, temperature, automation, lighting, fans, blind controls, and door-state indicators.
