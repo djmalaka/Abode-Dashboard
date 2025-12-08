@@ -1320,7 +1320,7 @@ Each control is a large, glowing circular button with subtle staggered animation
 Button 4 – Automate
 -------------------
 
-<img width="1886" height="1323" alt="image" src="https://github.com/user-attachments/assets/0adf3577-c0f0-4145-a2dc-022387538145" />
+![Screenshot_20251208_225240_Fully Kiosk Browser](https://github.com/user-attachments/assets/9e940338-1943-4e43-96f6-d6847308aeb7)
 
 ### Purpose
 
@@ -1345,7 +1345,7 @@ This is the **advanced** button – a full “system control” popup that:
 
 **Kill gate & PIN**
 
-<img width="1886" height="1323" alt="image" src="https://github.com/user-attachments/assets/1af117a1-4e0b-475c-b409-28e585487e55" />
+![Screenshot_20251208_225255_Fully Kiosk Browser](https://github.com/user-attachments/assets/cde2c373-9d2c-4766-a2a4-291361689f23)
 
 - `input_boolean.automation_kill_gate` – controls whether the keypad is shown.
 - `sensor.automation_kill_pin_dots` – displays `••••` style dots in the UI.
