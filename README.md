@@ -966,5 +966,249 @@ Make sure the custom cards are installed (often via HACS) and added to your Love
 ---
 ---
 
+### QUICKFIRE CARD
 
+The **Quickfire** card is a glassmorphic control panel that gives you **fast access** to three common “whole-house” actions:
+
+- **Lights** – snapshot and control all active lights with a smart “restore / replace” flow.
+- **Heat** – adjust multiple thermostats (downstairs, upstairs, whole house) from one popup.
+- **Blinds** – send **open / stop / my / close** to all blinds at once.
+- **Automate** – view system “telemetry” and safely **disable / restore automations** using a PIN-protected keypad.
+
+The card is designed to sit as a **single row** with four large buttons, each opening a full-screen glassy popup.
+
+---
+
+## Dependencies
+
+### Custom Cards / Integrations
+
+You’ll need:
+
+- [`custom:mod-card`](https://github.com/thomasloven/lovelace-card-mod)
+- [`custom:button-card`](https://github.com/custom-cards/button-card)
+- [`browser_mod`](https://github.com/thomasloven/hass-browser_mod)
+
+Optional core cards used inside popups (bundled with Home Assistant):
+
+- `grid`, `vertical-stack`
+- `markdown`
+- `thermostat`
+
+Make sure all custom cards + browser_mod are installed (e.g. via HACS) and added in **Settings → Dashboards → Resources**.
+
+---
+
+## High-Level Layout
+
+Quickfire (mod-card)
+├─ Title: “Quickfire”
+└─ 4-column grid:
+   ├─ Lights   → full-screen popup (smart “all lights” control)
+   ├─ Heat     → full-screen popup (3 thermostats)
+   ├─ Blinds   → full-screen popup (all blinds open/stop/my/close)
+   └─ Automate → full-screen popup (telemetry + automation kill/restore with PIN)
+
+The **outer `mod-card`** provides the frosted glass background, rounded corners, and drop shadow.  
+Inside it, a **`vertical-stack`** contains:
+
+1. A centered **“Quickfire”** heading.  
+2. A **4-column `grid`** – one button per feature.
+
+---
+
+Button 1 – Lights
+-----------------
+
+### Purpose
+
+- Shows a count of **currently-on lights** (`sensor.on_lights_count`).
+- On tap, opens a popup that:
+  - Detects if there’s a **saved snapshot** of lights (`sensor.lights_snapshot_storage`).
+  - Asks different questions depending on:
+    - Are some lights currently on?
+    - Is there a stored snapshot?
+  - Calls a **single script** with different `command` variables:
+    - `save_and_off` – save the current on-lights to snapshot and turn them off.
+    - `restore_and_clear` – restore previous lights from snapshot and clear it.
+    - `override_and_off` – turn off current lights and replace snapshot.
+
+### Required Entities / Scripts
+
+- `sensor.on_lights_count` – number of lights currently on.
+- `sensor.lights_snapshot_storage` – stores CSV list of entity IDs for snapshot.
+- `script.smart_lights_control` – main controller script that accepts a `command` variable:
+  - `save_and_off`
+  - `restore_and_clear`
+  - `override_and_off`
+
+### Popup Behaviour
+
+The popup is built with `browser_mod.popup` and nested `mod-card` layers to:
+
+- Make the popup **full screen** and edge-to-edge.
+- Show a **title animation** (“Control All Lights”).
+- Show conditional Markdown text:
+  - All off & no snapshot → “All lights are already off…”
+  - No snapshot & some on → “Turn off all current lights?”
+  - Snapshot & none on → “Restore your previous lights?”
+  - Snapshot & some on → “What would you like to do?” (Restore vs Turn off & replace)
+- Show **two main buttons**:
+  - Green: “Yes / Restore / Close” (depending on context)
+  - Red: “Cancel / Turn off & replace” (hidden entirely if not applicable)
+- A final **“Close”** pill button to exit.
+
+The main grid button also:
+
+- Displays a **lightbulb image** (`/local/Quickfire/lighton.png` or `/local/Quickfire/lightoff.png`).
+- Shows the **count badge** on top of the image when `on_lights_count > 0`.
+
+---
+
+Button 2 – Heat
+---------------
+
+### Purpose
+
+- Shows a small thermostat icon and **house-average temperature** (`sensor.house_temperature_weighted`).
+- On tap, opens a popup to control **3 thermostats**:
+  - `climate.downstairs_heating` → “Downstairs”
+  - `climate.upstairs_heating` → “Upstairs”
+  - `climate.whole_house_heating` → “Whole House”
+
+Each thermostat appears in a floating glass card with a subtle **fade/zoom/blur-in** animation.
+
+### Required Entities
+
+- `sensor.house_temperature_weighted`
+- `climate.downstairs_heating`
+- `climate.upstairs_heating`
+- `climate.whole_house_heating`
+
+Additional climate entities referenced in the icon logic (for “any heating on?” check):
+
+- Downstairs:
+  - `climate.hallway_thermostat`
+  - `climate.lounge_thermostat`
+  - `climate.kitchen_thermostat`
+  - `climate.wc_thermostat`
+- Upstairs:
+  - `climate.ensuite_thermostat`
+  - `climate.washroom_thermostat`
+  - `climate.room_2_thermostat`
+  - `climate.room_3_thermostat`
+  - `climate.room_4_thermostat`
+  - `climate.study_thermostat`
+
+### Icon Behaviour
+
+- If **any** of the above thermostats have state not equal to `off`, the button uses:
+  - `/local/Quickfire/thermostaton.png`
+- Otherwise:
+  - `/local/Quickfire/thermostatoff.png`
+- A badge shows the **weighted house temperature** to one decimal place (e.g. `21.3°`).
+
+---
+
+Button 3 – Blinds
+-----------------
+
+### Purpose
+
+- Shows a blinds icon and the **last command** sent to the lounge blinds.
+- On tap, opens a popup that sends **global commands** (`cover_entity: all`) to your `script.control_blinds`:
+  - **Open** → `command: open`
+  - **Stop** → `command: stop`
+  - **My** → `command: my`
+  - **Close** → `command: close`
+
+Each control is a large, glowing circular button with subtle staggered animations.
+
+### Required Entities / Scripts
+
+- **Somfy control script**
+  - `script.control_blinds`
+    - Accepts at least:
+      - `cover_entity` (here set to `all`)
+      - `command` (`open`, `stop`, `my`, `close`)
+      - `browser_id` (used to target the calling browser for UI feedback, optional depending on your implementation)
+- **State helper (for the small icon badge):**
+  - `input_select.lounge_blinds_last_command`  
+    Possible values: `open`, `close`, `my`, `stop`.
+
+### Icon Behaviour
+
+- Shows `/local/Quickfire/blinds.png` as the base image.
+- Displays a small circular badge with a **mdi icon** based on last command:
+
+| Command | Badge Icon       |
+|---------|------------------|
+| open    | `mdi:arrow-up`   |
+| close   | `mdi:arrow-down` |
+| my      | `mdi:star`       |
+| stop    | `mdi:pause`      |
+
+---
+
+Button 4 – Automate
+-------------------
+
+### Purpose
+
+This is the **advanced** button – a full “system control” popup that:
+
+1. Shows animated **terminal-style telemetry**:
+   - Integrations/components
+   - Recent automations & scripts
+   - Randomised entity events
+2. Lets you **kill all automations** OR **restore** them from a snapshot.
+3. Protects the “kill” path with a **PIN keypad**.
+
+### Required Entities / Scripts / Helpers
+
+**Snapshot & counts**
+
+- `sensor.automations_snapshot_storage` (and optional `_2`)
+  - Attributes:
+    - `entities` (comma-separated list of automations)
+    - `count` / `bool_count` (numbers of things to restore)
+- `sensor.enabled_automations_count` (and optional `_2`)
+
+**Kill gate & PIN**
+
+- `input_boolean.automation_kill_gate` – controls whether the keypad is shown.
+- `sensor.automation_kill_pin_dots` – displays `••••` style dots in the UI.
+- `sensor.automation_kill_pin_status` – text feedback:
+  - `Correct code` / `Incorrect code` etc.
+- `input_text.automation_kill_pin_entered` – stores the digits as user types.
+
+**PIN scripts**
+
+- `script.append_digit_to_kill_pin` – add a digit `"0"–"9"`.
+- `script.backspace_kill_pin` – delete last digit.
+- `script.automations_toggle_banner` – main logic to:
+  - Enable/disable automations.
+  - Validate `code`.
+  - Optionally skip PIN when `skip_pin: true`.
+- Optional:
+  - `sensor.enabled_automations_count_2`
+  - `sensor.automations_snapshot_storage_2`
+
+### Behaviour
+
+- First prompt:
+  - If **all automations are disabled** but there is a snapshot → primary button becomes **“Restore previous”**, calling `script.automations_toggle_banner` with `skip_pin: true`.
+  - Otherwise, primary button opens the **kill gate**:
+    - `input_boolean.automation_kill_gate` → `on`
+- When kill gate is **on**:
+  - Shows a **PIN keypad** (0–9, clear, backspace).
+  - “Confirm” button calls `script.automations_toggle_banner` with:
+    - `variables.code`: the entered PIN.
+  - “Cancel” button turns off `input_boolean.automation_kill_gate`.
+
+The grid icon shows:
+
+- `/local/Quickfire/automationon.png` if any automations are enabled.
+- `/local/Quickfire/automationoff.png` if not.
+- A numeric badge counting how many automations / scripts have been triggered in the **last 60 seconds**.
 
