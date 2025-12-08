@@ -205,7 +205,7 @@ Add these to `configuration.yaml` (or your preferred split YAML files).
 ---
 
 ## Template Sensors (Sun, Moon, Weather)
-
+```yaml
 template: 
   - sensor:
       - name: "Weather Abode Temperature"
@@ -244,6 +244,7 @@ rest:
         value_template: "OK"
         json_attributes:
           - timelines
+```
 ---
 
 **Kiosk mode behaviour**
