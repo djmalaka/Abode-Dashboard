@@ -633,5 +633,127 @@ They provide presence, temperature, automation, lighting, fans, blind controls, 
   - `binary_sensor.contact_sensor`
 
 ---
+---
+
+### LOCATION, TRAVEL PROGRESS & SECURITY CARD 
+
+This file defines a glassmorphic **Location & Security strip** that shows:
+
+- Two animated **presence / travel cards**:
+  - **Person 1** – travel progress *or* phone battery, ETA, and current place
+  - **Person 2** – travel progress *or* phone battery, ETA, and current place
+- A compact **Home Security** alarm control panel
+- A **Front Door Lock** status/quick-control button
+
+The visual style matches the rest of the dashboard:
+
+- Soft, blurred, glassmorphic background
+- Gradient progress bars filling from left to right
+- Circular avatar badges with profile photos or silhouettes
+- Scrolling subtitle line for ETA / location
+- Smooth transitions for progress changes
+
+---
+
+### Behaviour & Logic
+
+#### Progress vs Battery logic
+
+Each person card computes a `progress` variable that controls the gradient fill:
+
+- When **away from home** (or just left):
+  - Uses `sensor.home_travel_progress_person_1` / `sensor.home_travel_progress_person_2`
+    (0–100%) as the fill amount.
+  - The subtitle line shows:  
+    `Reaching home in <ETA>` when `input_text.person_1_eta` / `input_text.person_2_eta` is valid.
+- When **at home for more than ~2 minutes**:
+  - Falls back to **phone battery level (%)** as the fill:
+    - `sensor.person_1_phone_battery_level`
+    - `sensor.person_2_phone_battery_level`
+  - The name line shows a battery icon, for example:  
+    `Person 1 ⚡️ 78%`.
+
+There is a short grace period after arriving (travel progress 100% for <2 mins) so the bar can finish animating before switching to battery.
+
+#### Subtitle text
+
+- **Away with ETA available**  
+  `Reaching home in <ETA>`
+- **Otherwise**  
+  `<PlaceLabel> • <last updated X mins/hours ago>`
+
+Where:
+
+- `PlaceLabel` is:
+  - `"Home"` when state is `home`
+  - `"Work"` when state is `Work`
+  - `"Away"` for `not_home/unknown/away`
+  - Or a matching `zone.*` friendly name
+  - Or a cleaned-up version of the raw state.
+
+The subtitle line scrolls horizontally (`scroll-left` keyframe) inside a masked area.
+
+#### Security & Lock
+
+- **Home Security** uses `mushroom-alarm-control-panel-card` for quick arming:
+  - `armed_home`
+  - `armed_away`
+- **Front Door Lock** uses `mushroom-lock-card` with a minimal, background-less style so it blends into the glassmorphic container.
+
+---
+
+### Required Entities
+
+#### Person 1 card
+
+- **Person / Location**
+  - `person.person_1`
+- **Travel / ETA**
+  - `sensor.home_travel_progress_person_1` – 0–100% distance progress toward home
+  - `input_text.person_1_eta` – human-readable ETA text (“12 mins”, etc.)
+- **Battery**
+  - `sensor.person_1_phone_battery_level`
+  - `sensor.person_1_phone_battery_state` – used to detect charging (available if you want a visual hint)
+- **Timer / Refresh helper**
+  - `input_boolean.person_1_refresh_timer` – used as a polling trigger for smoother updates
+- **Avatar image (frontend only)**
+  - `/local/person_1.png`
+
+#### Person 2 card
+
+- **Person / Location**
+  - `person.person_2`
+- **Travel / ETA**
+  - `sensor.home_travel_progress_person_2`
+  - `input_text.person_2_eta`
+- **Battery**
+  - `sensor.person_2_phone_battery_level`
+  - `sensor.person_2_phone_battery_state`
+- **Avatar image (frontend only)**
+  - `/local/person_2.png`
+
+#### Security / Lock
+
+- **Alarm**
+  - `alarm_control_panel.alarmo`
+- **Front door**
+  - `lock.front_door_lock_ultra`
+
+---
+
+### Dependencies
+
+This file uses the following custom cards / integrations:
+
+- [`custom:mod-card`](https://github.com/thomasloven/lovelace-card-mod) – outer glassmorphic wrapper
+- [`custom:button-card`](https://github.com/custom-cards/button-card) – for the person/location tiles
+- [`Mushroom cards`](https://github.com/piitaya/lovelace-mushroom)
+  - `custom:mushroom-alarm-control-panel-card`
+  - `custom:mushroom-lock-card`
+- [`card-mod`](https://github.com/thomasloven/lovelace-card-mod) – under the hood for `mod-card` and `card_mod` styling
+
+Make sure they are installed (e.g. via HACS) and added to your Lovelace `resources:` configuration.
+
+---
 
 
