@@ -1,0 +1,1688 @@
+type: custom:mod-card
+card_mod:
+  style:
+    .: |
+      ha-card {
+        width: 100%;
+        max-width: 1200px;
+
+        margin: 0 auto;
+        padding: 0.6rem;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(151, 87, 167, 0.2), rgba(75, 124, 132, 0.2));
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25),
+                    inset 0 0 8px rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+card:
+  type: vertical-stack
+  cards:
+    - type: custom:button-card
+      name: Quickfire
+      show_icon: false
+      show_state: false
+      styles:
+        card:
+          - background: none
+          - box-shadow: none
+          - font-weight: bold
+          - color: white
+          - justify-content: center
+          - font-size: 16px
+          - text-align: center
+          - padding-bottom: 2px
+          - padding-top: 0px
+          - margin-top: "-2px"
+          - margin-bottom: "-10px"
+    - type: grid
+      columns: 4
+      square: false
+      cards:
+        - type: custom:button-card
+          entity: sensor.on_lights_count
+          name: Lights
+          tap_action:
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup
+              data:
+                title: " "
+                style: >
+                  :host .mdc-dialog .mdc-dialog__scrim { background: transparent
+                  !important; } :host .mdc-dialog .mdc-dialog__container {
+                  width: 100vw; height: 100vh; } :host .mdc-dialog
+                  .mdc-dialog__surface {
+                    width: 100vw !important; height: 100vh !important; max-width: 100vw !important;
+                    max-height: 100vh !important; background: transparent !important; border-radius: 0 !important;
+                    box-shadow: none !important; overflow: hidden !important;
+                  } :host .mdc-dialog .mdc-dialog__title, :host .mdc-dialog
+                  .mdc-dialog__actions { display: none !important; opacity: 0
+                  !important; height: 0 !important; } :host .mdc-dialog
+                  .mdc-dialog__content { padding: 0 !important; overflow: hidden
+                  !important; }
+                content:
+                  type: custom:mod-card
+                  style:
+                    .: |
+                      ha-card {
+                        position: fixed; inset: 0;
+                        background: rgba(10,10,10,0.18);
+                        backdrop-filter: blur(10px) saturate(120%);
+                        -webkit-backdrop-filter: blur(10px) saturate(120%);
+                        border-radius: 0; box-shadow: none;
+                        display: flex; align-items: center; justify-content: center;
+                        overflow: hidden;
+                      }
+                  card:
+                    type: custom:mod-card
+                    style:
+                      .: >
+                        ha-card { background: none; border-radius: 24px;
+                        box-shadow: none; padding: 0; max-width: min(540px,
+                        96vw); width: 100%; }
+                    card:
+                      type: custom:mod-card
+                      style:
+                        .: |
+                          ha-card {
+                            background: rgba(40, 40, 40, 0.85);
+                            backdrop-filter: blur(10px);
+                            -webkit-backdrop-filter: blur(10px);
+                            border-radius: 24px;
+                            padding: 16px;
+                            box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+                          }
+                      card:
+                        type: vertical-stack
+                        cards:
+                          - type: custom:button-card
+                            name: Control All Lights
+                            show_icon: false
+                            tap_action:
+                              action: none
+                            hold_action:
+                              action: none
+                            styles:
+                              card:
+                                - background: none
+                                - box-shadow: none
+                                - border: none
+                                - padding: 0
+                                - margin: "-188px 0 10px 0"
+                                - pointer-events: none
+                                - opacity: 0
+                                - filter: blur(8px)
+                                - transform: translateY(-6px) scale(0.98)
+                                - animation: titleIn 3s cubic-bezier(.2,.8,.2,1) forwards
+                                - animation-delay: 360ms
+                              name:
+                                - color: "#fff"
+                                - font-weight: "400"
+                                - font-size: 28px
+                                - letter-spacing: .2px
+                                - text-align: center
+                                - justify-self: center
+                                - text-shadow: 0 1px 2px rgba(0,0,0,.35)
+                            extra_styles: |
+                              @keyframes titleIn {
+                                to { filter: blur(0); opacity: 1; transform: translateY(0) scale(1); }
+                              }
+                          - type: markdown
+                            content: |
+                              [[[
+                                const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                const s = hass.states['sensor.lights_snapshot_storage'];
+                                const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                if (!snap && onCount === 0) {
+                                  return "## All lights are already off.\n_No saved snapshot to restore._";
+                                }
+                                if (!snap && onCount > 0) {
+                                  return "## Turn off all current lights?\n_This will remember the current set before switching them off._";
+                                }
+                                if (snap && onCount === 0) {
+                                  const n = snap.split(',').filter(Boolean).length;
+                                  return `## Restore your previous lights?\n_This will turn on ${n} saved light${n===1?'':'s'} and clear the snapshot._`;
+                                }
+                                const n = snap.split(',').filter(Boolean).length;
+                                return `## What would you like to do?\n- **Restore** ${n} previously-on light${n===1?'':'s'}\n- **Or** turn off all lights now and replace the snapshot`;
+                              ]]]
+                            style:
+                              .: >
+                                ha-card { background: none; box-shadow: none;
+                                text-align: center; color: white; } h2 {
+                                font-size: 18px; font-weight: 500; }
+                          - type: grid
+                            columns: 2
+                            square: false
+                            cards:
+                              - type: custom:button-card
+                                name: |
+                                  [[[
+                                    const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                    const s = hass.states['sensor.lights_snapshot_storage'];
+                                    const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                    if (!snap && onCount > 0) return "Yes, turn off now";
+                                    if (snap && onCount === 0) return "Restore previous";
+                                    if (snap && onCount > 0) return "Restore previous";
+                                    return "Close";
+                                  ]]]
+                                tap_action:
+                                  action: call-service
+                                  service: |
+                                    [[[
+                                      const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                      const s = hass.states['sensor.lights_snapshot_storage'];
+                                      const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                      // Use script.turn_on for commands; use browser_mod.close_popup for Close
+                                      if (!snap && onCount > 0) return 'script.turn_on';         // save_and_off
+                                      if (snap && onCount === 0) return 'script.turn_on';        // restore_and_clear
+                                      if (snap && onCount > 0) return 'script.turn_on';          // restore_and_clear
+                                      return 'browser_mod.close_popup';                          // Close case
+                                    ]]]
+                                  service_data: |
+                                    [[[
+                                      const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                      const s = hass.states['sensor.lights_snapshot_storage'];
+                                      const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                      if (!snap && onCount > 0)
+                                        return { entity_id: 'script.smart_lights_control', variables: { command: 'save_and_off' } };
+                                      if (snap && onCount === 0)
+                                        return { entity_id: 'script.smart_lights_control', variables: { command: 'restore_and_clear' } };
+                                      if (snap && onCount > 0)
+                                        return { entity_id: 'script.smart_lights_control', variables: { command: 'restore_and_clear' } };
+                                      return {}; // Close case
+                                    ]]]
+                                styles:
+                                  card:
+                                    - background-color: rgba(76, 175, 80, 0.5)
+                                    - color: white
+                                    - border-radius: 12px
+                                    - justify-self: stretch
+                                card_mod:
+                                  style: |
+                                    [[[
+                                      const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                      const s = hass.states['sensor.lights_snapshot_storage'];
+                                      const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                      // When there’s no snapshot and all lights are off, make this button span both columns
+                                      if (!snap && onCount === 0) {
+                                        return `
+                                          :host { grid-column: 1 / -1; }
+                                          ha-card { width: 100%; }
+                                        `;
+                                      }
+                                      return ``;
+                                    ]]]
+                              - type: custom:button-card
+                                name: |
+                                  [[[
+                                    const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                    const s = hass.states['sensor.lights_snapshot_storage'];
+                                    const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+
+                                    // cases
+                                    // 1) !snap & on>0  -> Cancel
+                                    // 2) snap & on==0  -> Cancel  (no "Clear snapshot" button)
+                                    // 3) snap & on>0   -> Turn off & replace
+                                    // 4) !snap & on==0 -> hidden (name irrelevant)
+                                    if (!snap && onCount > 0) return "Cancel";
+                                    if (snap && onCount === 0) return "Cancel";
+                                    if (snap && onCount > 0) return "Turn off & replace";
+                                    return "";
+                                  ]]]
+                                tap_action:
+                                  action: call-service
+                                  service: |
+                                    [[[
+                                      const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                      const s = hass.states['sensor.lights_snapshot_storage'];
+                                      const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                      if (!snap && onCount > 0) return 'browser_mod.close_popup';          // cancel
+                                      if (snap && onCount === 0) return 'browser_mod.close_popup';         // cancel
+                                      if (snap && onCount > 0) return 'script.turn_on';                    // override_and_off
+                                      return 'browser_mod.close_popup';
+                                    ]]]
+                                  service_data: |
+                                    [[[
+                                      const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                      const s = hass.states['sensor.lights_snapshot_storage'];
+                                      const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                      if (snap && onCount > 0)
+                                        return { entity_id: 'script.smart_lights_control', variables: { command: 'override_and_off' } };
+                                      return {};
+                                    ]]]
+                                styles:
+                                  card:
+                                    - background-color: rgba(244, 67, 54, 0.5)
+                                    - color: white
+                                    - border-radius: 12px
+                                    - display: |
+                                        [[[
+                                          const onCount = Number(hass.states['sensor.on_lights_count'] && hass.states['sensor.on_lights_count'].state) || 0;
+                                          const s = hass.states['sensor.lights_snapshot_storage'];
+                                          const snap = s && s.attributes && s.attributes.entities ? (s.attributes.entities + '').trim() : '';
+                                          return (!snap && onCount === 0) ? 'none' : 'block';
+                                        ]]]
+                          - type: custom:button-card
+                            name: Close
+                            icon: mdi:close
+                            show_icon: true
+                            show_name: false
+                            tap_action:
+                              action: call-service
+                              service: browser_mod.close_popup
+                            styles:
+                              card:
+                                - margin: 16px auto 0 auto
+                                - padding: 8px 16px
+                                - border-radius: 999px
+                                - background: >-
+                                    linear-gradient(145deg,
+                                    rgba(255,255,255,0.10), rgba(0,0,0,0.08))
+                                - box-shadow: >-
+                                    inset 1px 1px 2px rgba(255,255,255,0.2),
+                                    inset -1px -1px 2px rgba(0,0,0,0.1)
+                                - transition: transform 120ms ease
+                              icon:
+                                - color: "#ffffff"
+                                - width: 18px
+                            extra_styles: |
+                              ha-card:active { transform: scale(0.97); }
+          show_icon: false
+          show_state: false
+          show_name: true
+          custom_fields:
+            icon: |
+              [[[
+                const n = Number(entity.state) || 0;
+                const src = n > 0 ? '/local/Quickfire/lighton.png' : '/local/Quickfire/lightoff.png';
+                return `
+                  <div style="position:relative; display:inline-block;">
+                    <img src="${src}" style="height:60px;">
+                    ${n > 0 ? `
+                      <span
+                        style="
+                          position:absolute; top:5px; right:-6px;
+                          height:18px; min-width:14px; padding:0 6px;
+                          display:flex; align-items:center; justify-content:center;
+                          font-size:10px; line-height:18px; font-weight:700;
+                          color:#fff; border-radius:999px;
+                          background: linear-gradient(135deg, rgba(255,180,0,.95), rgba(255,98,0,.95));
+                          box-shadow: 0 2px 6px rgba(0,0,0,.35);
+                          border: 1px solid rgba(255,255,255,.35);
+                        ">
+                        ${n}
+                      </span>` : ``}
+                  </div>`;
+              ]]]
+          styles:
+            card:
+              - border-radius: 14px
+              - padding: 0.3rem
+              - background: none
+              - box-shadow: none
+            grid:
+              - grid-template-areas: "\"icon\" \"n\""
+              - grid-template-rows: 1fr auto
+            name:
+              - font-size: 14px
+              - font-weight: 500
+              - justify-self: center
+              - padding-top: 0px
+            custom_fields:
+              icon:
+                - display: flex
+                - justify-content: center
+                - align-items: center
+        - type: custom:button-card
+          name: Heat
+          entity: sensor.house_temperature_weighted
+          tap_action:
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup
+              data:
+                title: " "
+                style: >
+                  :host .mdc-dialog .mdc-dialog__scrim { background: transparent
+                  !important; } :host .mdc-dialog .mdc-dialog__container {
+                  width: 100vw; height: 100vh; } :host .mdc-dialog
+                  .mdc-dialog__surface {
+                    width: 100vw !important; height: 100vh !important;
+                    max-width: 100vw !important; max-height: 100vh !important;
+                    background: transparent !important; border-radius: 0 !important;
+                    box-shadow: none !important; overflow: hidden !important;
+                  } :host .mdc-dialog .mdc-dialog__title, :host .mdc-dialog
+                  .mdc-dialog__actions { display: none !important; opacity: 0
+                  !important; height: 0 !important; } :host .mdc-dialog
+                  .mdc-dialog__content { padding: 0 !important; overflow: hidden
+                  !important; }
+                content:
+                  type: custom:mod-card
+                  style:
+                    .: |
+                      ha-card {
+                        position: fixed; inset: 0;
+                        background: rgba(10,10,10,0.18);
+                        backdrop-filter: blur(10px) saturate(120%);
+                        -webkit-backdrop-filter: blur(10px) saturate(120%);
+                        border-radius: 0; box-shadow: none;
+                        display: flex; align-items: center; justify-content: center; /* center whole stack */
+                        overflow: hidden;
+                      }
+                  card:
+                    type: custom:mod-card
+                    style:
+                      .: |
+                        ha-card {
+                          background: none; border-radius: 24px; padding: 16px;
+                          box-shadow: none; max-width: min(1200px, 96vw); width: 100%;
+                          display: flex; flex-direction: column; align-items: center;
+                        }
+                    card:
+                      type: vertical-stack
+                      cards:
+                        - type: custom:button-card
+                          name: Control multiple thermostats
+                          show_icon: false
+                          tap_action:
+                            action: none
+                          hold_action:
+                            action: none
+                          styles:
+                            card:
+                              - background: none
+                              - box-shadow: none
+                              - border: none
+                              - padding: 0
+                              - margin: "-64px 0 10px 0"
+                              - pointer-events: none
+                              - opacity: 0
+                              - filter: blur(8px)
+                              - transform: translateY(-6px) scale(0.98)
+                              - animation: titleIn 3s cubic-bezier(.2,.8,.2,1) forwards
+                              - animation-delay: 560ms
+                            name:
+                              - color: "#fff"
+                              - font-weight: "400"
+                              - font-size: 28px
+                              - letter-spacing: .2px
+                              - text-align: center
+                              - justify-self: center
+                              - text-shadow: 0 1px 2px rgba(0,0,0,.35)
+                          extra_styles: |
+                            @keyframes titleIn {
+                              to { filter: blur(0); opacity: 1; transform: translateY(0) scale(1); }
+                            }
+                        - type: grid
+                          columns: 3
+                          square: false
+                          cards:
+                            - type: custom:mod-card
+                              style:
+                                .: |
+                                  @keyframes _fadeZoomBlurInA {
+                                    from { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(10px); }
+                                    to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0);  }
+                                  }
+                                  ha-card {
+                                    background: none; box-shadow: none; padding: 0; margin: 8px;
+                                    opacity: 0; filter: blur(10px);
+                                    transform: translateY(12px) scale(0.96);
+                                    will-change: opacity, transform, filter;
+                                    animation: _fadeZoomBlurInA 420ms cubic-bezier(.2,.8,.2,1) forwards;
+                                    animation-delay: 0ms;
+                                  }
+                              card:
+                                type: thermostat
+                                entity: climate.downstairs_heating
+                                name: Downstairs
+                                card_mod:
+                                  style: |
+                                    ha-card {
+                                      background: rgba(40,40,40,0.85);
+                                      backdrop-filter: blur(10px);
+                                      -webkit-backdrop-filter: blur(10px);
+                                      border-radius: 20px;
+                                      box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+                                      overflow: hidden;
+                                    }
+                            - type: custom:mod-card
+                              style:
+                                .: |
+                                  @keyframes _fadeZoomBlurInB {
+                                    from { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(10px); }
+                                    to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0);  }
+                                  }
+                                  ha-card {
+                                    background: none; box-shadow: none; padding: 0; margin: 8px;
+                                    opacity: 0; filter: blur(10px);
+                                    transform: translateY(12px) scale(0.96);
+                                    will-change: opacity, transform, filter;
+                                    animation: _fadeZoomBlurInB 420ms cubic-bezier(.2,.8,.2,1) forwards;
+                                    animation-delay: 140ms;
+                                  }
+                              card:
+                                type: thermostat
+                                entity: climate.upstairs_heating
+                                name: Upstairs
+                                card_mod:
+                                  style: |
+                                    ha-card {
+                                      background: rgba(40,40,40,0.85);
+                                      backdrop-filter: blur(10px);
+                                      -webkit-backdrop-filter: blur(10px);
+                                      border-radius: 20px;
+                                      box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+                                      overflow: hidden;
+                                    }
+                            - type: custom:mod-card
+                              style:
+                                .: |
+                                  @keyframes _fadeZoomBlurInC {
+                                    from { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(10px); }
+                                    to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0);  }
+                                  }
+                                  ha-card {
+                                    background: none; box-shadow: none; padding: 0; margin: 8px;
+                                    opacity: 0; filter: blur(10px);
+                                    transform: translateY(12px) scale(0.96);
+                                    will-change: opacity, transform, filter;
+                                    animation: _fadeZoomBlurInC 420ms cubic-bezier(.2,.8,.2,1) forwards;
+                                    animation-delay: 280ms;
+                                  }
+                              card:
+                                type: thermostat
+                                entity: climate.whole_house_heating
+                                name: Whole House
+                                card_mod:
+                                  style: |
+                                    ha-card {
+                                      background: rgba(40,40,40,0.85);
+                                      backdrop-filter: blur(10px);
+                                      -webkit-backdrop-filter: blur(10px);
+                                      border-radius: 20px;
+                                      box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+                                      overflow: hidden;
+                                    }
+                        - type: custom:button-card
+                          name: Close
+                          icon: mdi:close
+                          show_icon: true
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: browser_mod.close_popup
+                          styles:
+                            card:
+                              - margin: 16px auto 0 auto
+                              - padding: 8px 16px
+                              - border-radius: 999px
+                              - background: >-
+                                  linear-gradient(145deg,
+                                  rgba(255,255,255,0.10), rgba(0,0,0,0.08))
+                              - box-shadow: >-
+                                  inset 1px 1px 2px rgba(255,255,255,0.2), inset
+                                  -1px -1px 2px rgba(0,0,0,0.1)
+                              - transition: transform 120ms ease
+                            icon:
+                              - color: "#ffffff"
+                              - width: 18px
+                          extra_styles: |
+                            ha-card:active { transform: scale(0.97); }
+          show_icon: false
+          show_state: false
+          show_name: true
+          custom_fields:
+            icon: |
+              [[[
+                const d = ["climate.hallway_thermostat","climate.lounge_thermostat","climate.kitchen_thermostat","climate.wc_thermostat"];
+                const u = ["climate.ensuite_thermostat","climate.washroom_thermostat","climate.room_2_thermostat","climate.room_3_thermostat","climate.room_4_thermostat","climate.study_thermostat"];
+                const anyOn = d.concat(u).some(id => (hass.states[id]?.state || 'off') !== 'off');
+                const temp = Number(states['sensor.house_temperature_weighted']?.state) || 0;
+                const src = anyOn ? '/local/Quickfire/thermostaton.png' : '/local/Quickfire/thermostatoff.png';
+                return `
+                  <div style="position:relative; display:inline-block; pointer-events:none;">
+                    <img src="${src}" style="height:60px; pointer-events:none;">
+                    ${temp ? `
+                      <span style="
+                        position:absolute; top:5px; right:-20px;
+                        height:20px; min-width:20px; padding:0 4px;
+                        display:flex; align-items:center; justify-content:center;
+                        font-size:12px; line-height:20px; font-weight:700;
+                        color:#fff; border-radius:999px;
+                        background: linear-gradient(135deg, rgba(255,180,0,.95), rgba(255,98,0,.95));
+                        box-shadow: 0 2px 6px rgba(0,0,0,.35);
+                        border: 1px solid rgba(255,255,255,.35);
+                      ">${temp.toFixed(1)}°</span>` : ``}
+                  </div>`;
+              ]]]
+          styles:
+            card:
+              - border-radius: 14px
+              - padding: 0.3rem
+              - background: none
+              - box-shadow: none
+            grid:
+              - grid-template-areas: "\"icon\" \"n\""
+              - grid-template-rows: 1fr auto
+            name:
+              - font-size: 14px
+              - font-weight: 500
+              - justify-self: center
+              - padding-top: 0px
+            custom_fields:
+              icon:
+                - display: flex
+                - justify-content: center
+                - align-items: center
+        - type: custom:button-card
+          name: Blinds
+          tap_action:
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup
+              data:
+                title: " "
+                style: >
+                  /* Fullscreen, no scrim, no built-in header/footer */ :host
+                  .mdc-dialog .mdc-dialog__scrim { background: transparent
+                  !important; } :host .mdc-dialog .mdc-dialog__container {
+                  width: 100vw; height: 100vh; } :host .mdc-dialog
+                  .mdc-dialog__surface {
+                    width: 100vw !important; height: 100vh !important;
+                    max-width: 100vw !important; max-height: 100vh !important;
+                    background: transparent !important; border-radius: 0 !important;
+                    box-shadow: none !important; overflow: hidden !important;
+                  } :host [slot="title"], :host .mdc-dialog__title, :host
+                  ha-header-bar, :host .mdc-dialog__actions {
+                    display: none !important; opacity: 0 !important; height: 0 !important; padding: 0 !important; margin: 0 !important;
+                  } :host .mdc-dialog .mdc-dialog__content { padding: 0
+                  !important; overflow: hidden !important; }
+                content:
+                  type: custom:mod-card
+                  style:
+                    .: |
+                      ha-card {
+                        position: fixed; inset: 0;
+                        background: rgba(10,10,10,0.18);
+                        backdrop-filter: blur(10px) saturate(120%);
+                        -webkit-backdrop-filter: blur(10px) saturate(120%);
+                        border-radius: 0; box-shadow: none; overflow: hidden;
+                        display: flex; align-items: center; justify-content: center;
+                      }
+                  card:
+                    type: custom:mod-card
+                    style:
+                      .: |
+                        ha-card {
+                          background: none; border-radius: 24px; padding: 16px;
+                          box-shadow: none;
+                          max-width: min(560px, 96vw); width: 100%;
+                          min-height: clamp(480px, 70vh, 820px);
+
+                          display: grid;
+                          grid-template-rows: auto 1fr auto; /* Title | Middle | Close */
+                          align-items: center;
+                          justify-items: center;
+                          gap: 0px;
+                        }
+                    card:
+                      type: vertical-stack
+                      cards:
+                        - type: custom:button-card
+                          name: Control All Blinds
+                          show_icon: false
+                          tap_action:
+                            action: none
+                          hold_action:
+                            action: none
+                          styles:
+                            card:
+                              - background: none
+                              - box-shadow: none
+                              - border: none
+                              - padding: 0
+                              - margin: "-50px 0 10px 0"
+                              - pointer-events: none
+                              - opacity: 0
+                              - filter: blur(8px)
+                              - transform: translateY(-6px) scale(0.98)
+                              - animation: titleIn 3s cubic-bezier(.2,.8,.2,1) forwards
+                              - animation-delay: 560ms
+                            name:
+                              - color: "#fff"
+                              - font-weight: "400"
+                              - font-size: 28px
+                              - letter-spacing: .2px
+                              - text-align: center
+                              - justify-self: center
+                              - text-shadow: 0 1px 2px rgba(0,0,0,.35)
+                          extra_styles: |
+                            @keyframes titleIn {
+                              to { filter: blur(0); opacity: 1; transform: translateY(0) scale(1); }
+                            }
+                        - type: custom:mod-card
+                          style:
+                            .: |
+                              ha-card {
+                                background: none; box-shadow: none; border: none;
+                                height: 100%;
+                                display: flex; align-items: center; justify-content: center;
+                              }
+                          card:
+                            type: grid
+                            columns: 1
+                            square: false
+                            cards:
+                              - type: custom:button-card
+                                name: Open
+                                icon: mdi:arrow-up-bold
+                                show_icon: true
+                                show_name: true
+                                tap_action:
+                                  action: call-service
+                                  service: script.control_blinds
+                                  data:
+                                    cover_entity: all
+                                    command: open
+                                    browser_id: |-
+                                      [[[
+                                        return (window.browser_mod && window.browser_mod.browser_id)
+                                          || (window.localStorage && localStorage.getItem('browser_mod-browser-id'))
+                                          || '';
+                                      ]]]
+                                styles:
+                                  card:
+                                    - width: 80px
+                                    - height: 80px
+                                    - border-radius: 50%
+                                    - margin: 24px auto 16px auto
+                                    - background: >-
+                                        radial-gradient(circle at 30% 30%,
+                                        rgba(0,255,191,0.22),
+                                        rgba(0,255,191,0.10))
+                                    - box-shadow: >-
+                                        0 0 14px 1px rgba(0,255,191,0.75), inset
+                                        1px 1px 2px rgba(0,255,191,0.95), inset
+                                        -1px -1px 2px rgba(0,255,191,0.25)
+                                    - transition: all 150ms ease
+                                  grid:
+                                    - grid-template-areas: "\"i\" \"n\""
+                                    - grid-template-rows: 1fr auto
+                                  icon:
+                                    - color: "#00FFBF"
+                                    - width: 36px
+                                  name:
+                                    - color: "#ffffff"
+                                    - font-size: 12px
+                                    - padding: 0 0 8px 0
+                                    - justify-self: center
+                                    - text-align: center
+                                extra_styles: >
+                                  @keyframes staggeredBlurInA {
+                                    from { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(4px); }
+                                    to   { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0); }
+                                  }
+
+                                  ha-card { opacity: 0; animation:
+                                  staggeredBlurInA 420ms ease-out forwards;
+                                  animation-delay: 0ms; }
+
+                                  ha-card:active { transform: scale(0.96); }
+                              - type: custom:button-card
+                                name: Stop
+                                icon: mdi:pause
+                                show_icon: true
+                                show_name: true
+                                tap_action:
+                                  action: call-service
+                                  service: script.control_blinds
+                                  data:
+                                    cover_entity: all
+                                    command: stop
+                                    browser_id: |-
+                                      [[[
+                                        return (window.browser_mod && window.browser_mod.browser_id)
+                                          || (window.localStorage && localStorage.getItem('browser_mod-browser-id'))
+                                          || '';
+                                      ]]]
+                                styles:
+                                  card:
+                                    - width: 80px
+                                    - height: 80px
+                                    - border-radius: 50%
+                                    - margin: 0 auto 16px auto
+                                    - background: >-
+                                        radial-gradient(circle at 30% 30%,
+                                        rgba(255,225,0,0.22),
+                                        rgba(255,225,0,0.10))
+                                    - box-shadow: >-
+                                        0 0 14px 1px rgba(255,225,0,0.78), inset
+                                        1px 1px 2px rgba(255,225,0,0.96), inset
+                                        -1px -1px 2px rgba(255,225,0,0.30)
+                                    - transition: all 150ms ease
+                                  grid:
+                                    - grid-template-areas: "\"i\" \"n\""
+                                    - grid-template-rows: 1fr auto
+                                  icon:
+                                    - color: "#FFE100"
+                                    - width: 36px
+                                  name:
+                                    - color: "#ffffff"
+                                    - font-size: 12px
+                                    - padding: 0 0 8px 0
+                                    - justify-self: center
+                                    - text-align: center
+                                extra_styles: >
+                                  @keyframes staggeredBlurInB {
+                                    from { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(4px); }
+                                    to   { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0); }
+                                  }
+
+                                  ha-card { opacity: 0; animation:
+                                  staggeredBlurInB 420ms ease-out forwards;
+                                  animation-delay: 100ms; }
+
+                                  ha-card:active { transform: scale(0.96); }
+                              - type: custom:button-card
+                                name: My
+                                icon: mdi:star
+                                show_icon: true
+                                show_name: true
+                                tap_action:
+                                  action: call-service
+                                  service: script.control_blinds
+                                  data:
+                                    cover_entity: all
+                                    command: my
+                                    browser_id: |-
+                                      [[[
+                                        return (window.browser_mod && window.browser_mod.browser_id)
+                                          || (window.localStorage && localStorage.getItem('browser_mod-browser-id'))
+                                          || '';
+                                      ]]]
+                                styles:
+                                  card:
+                                    - width: 80px
+                                    - height: 80px
+                                    - border-radius: 50%
+                                    - margin: 0 auto 16px auto
+                                    - background: >-
+                                        radial-gradient(circle at 30% 30%,
+                                        rgba(255,120,255,0.22),
+                                        rgba(255,120,255,0.10))
+                                    - box-shadow: >-
+                                        0 0 14px 1px rgba(255,120,255,0.78),
+                                        inset 1px 1px 2px
+                                        rgba(255,120,255,0.96), inset -1px -1px
+                                        2px rgba(255,120,255,0.30)
+                                    - transition: all 150ms ease
+                                  grid:
+                                    - grid-template-areas: "\"i\" \"n\""
+                                    - grid-template-rows: 1fr auto
+                                  icon:
+                                    - color: "#FF78FF"
+                                    - width: 36px
+                                  name:
+                                    - color: "#ffffff"
+                                    - font-size: 12px
+                                    - padding: 0 0 8px 0
+                                    - justify-self: center
+                                    - text-align: center
+                                extra_styles: >
+                                  @keyframes staggeredBlurInC {
+                                    from { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(4px); }
+                                    to   { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0); }
+                                  }
+
+                                  ha-card { opacity: 0; animation:
+                                  staggeredBlurInC 420ms ease-out forwards;
+                                  animation-delay: 200ms; }
+
+                                  ha-card:active { transform: scale(0.96); }
+                              - type: custom:button-card
+                                name: Close
+                                icon: mdi:arrow-down-bold
+                                show_icon: true
+                                show_name: true
+                                tap_action:
+                                  action: call-service
+                                  service: script.control_blinds
+                                  data:
+                                    cover_entity: all
+                                    command: close
+                                    browser_id: |-
+                                      [[[
+                                        return (window.browser_mod && window.browser_mod.browser_id)
+                                          || (window.localStorage && localStorage.getItem('browser_mod-browser-id'))
+                                          || '';
+                                      ]]]
+                                styles:
+                                  card:
+                                    - width: 80px
+                                    - height: 80px
+                                    - border-radius: 50%
+                                    - margin: 0 auto 8px auto
+                                    - background: >-
+                                        radial-gradient(circle at 30% 30%,
+                                        rgba(64,156,255,0.24),
+                                        rgba(64,156,255,0.12))
+                                    - box-shadow: >-
+                                        0 0 14px 1px rgba(64,156,255,0.80),
+                                        inset 1px 1px 2px rgba(64,156,255,0.98),
+                                        inset -1px -1px 2px
+                                        rgba(64,156,255,0.32)
+                                    - transition: all 150ms ease
+                                  grid:
+                                    - grid-template-areas: "\"i\" \"n\""
+                                    - grid-template-rows: 1fr auto
+                                  icon:
+                                    - color: "#409CFF"
+                                    - width: 36px
+                                  name:
+                                    - color: "#ffffff"
+                                    - font-size: 12px
+                                    - padding: 0 0 8px 0
+                                    - justify-self: center
+                                    - text-align: center
+                                extra_styles: >
+                                  @keyframes staggeredBlurInD {
+                                    from { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(4px); }
+                                    to   { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0); }
+                                  }
+
+                                  ha-card { opacity: 0; animation:
+                                  staggeredBlurInD 420ms ease-out forwards;
+                                  animation-delay: 300ms; }
+
+                                  ha-card:active { transform: scale(0.96); }
+                        - type: custom:button-card
+                          name: Close
+                          icon: mdi:close
+                          show_icon: true
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: browser_mod.close_popup
+                          styles:
+                            card:
+                              - margin: 10px auto 0 auto
+                              - padding: 8px 16px
+                              - border-radius: 999px
+                              - background: >-
+                                  linear-gradient(145deg,
+                                  rgba(255,255,255,0.10), rgba(0,0,0,0.08))
+                              - box-shadow: >-
+                                  inset 1px 1px 2px rgba(255,255,255,0.2), inset
+                                  -1px -1px 2px rgba(0,0,0,0.1)
+                              - transition: transform 120ms ease
+                            icon:
+                              - color: "#ffffff"
+                              - width: 18px
+                          extra_styles: |
+                            ha-card:active { transform: scale(0.97); }
+          show_icon: false
+          show_state: false
+          show_name: true
+          custom_fields:
+            icon: |
+              [[[
+                const command = states['input_select.lounge_blinds_last_command'].state;
+                let icon = null;
+                if (command == 'open')  icon = 'mdi:arrow-up';
+                if (command == 'close') icon = 'mdi:arrow-down';
+                if (command == 'my')    icon = 'mdi:star';
+                if (command == 'stop')  icon = 'mdi:pause';
+                return `
+                  <div style="position:relative; display:inline-block;">
+                    <img src="/local/Quickfire/blinds.png" style="height:60px;">
+                    ${icon ? `
+                      <span style="
+                        position:absolute; top:5px; right:0px;
+                        height:20px; width:20px;
+                        display:flex; align-items:center; justify-content:center;
+                        color:#fff; border-radius:999px;
+                        background: linear-gradient(135deg, rgba(255,180,0,.95), rgba(255,98,0,.95));
+                        box-shadow: 0 2px 6px rgba(0,0,0,.35);
+                        border: 1px solid rgba(255,255,255,.35);
+                      ">
+                        <ha-icon icon="${icon}" style="--mdc-icon-size: 14px;"></ha-icon>
+                      </span>` : ``}
+                  </div>`;
+              ]]]
+          styles:
+            card:
+              - border-radius: 14px
+              - padding: 0.3rem
+              - background: none
+              - box-shadow: none
+            grid:
+              - grid-template-areas: "\"icon\" \"n\""
+              - grid-template-rows: 1fr auto
+            name:
+              - font-size: 14px
+              - font-weight: 500
+              - justify-self: center
+              - padding-top: 0px
+            custom_fields:
+              icon:
+                - display: flex
+                - justify-content: center
+                - align-items: center
+        - type: custom:button-card
+          name: Automate
+          show_icon: false
+          show_state: false
+          triggers_update: all
+          tap_action:
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.sequence
+              data:
+                sequence:
+                  - service: input_boolean.turn_off
+                    target:
+                      entity_id: input_boolean.popup_keypad_visible
+                  - delay: 0.1
+                  - service: browser_mod.popup
+                    data:
+                      title: " "
+                      style: >
+                        :host .mdc-dialog .mdc-dialog__scrim { background:
+                        transparent !important; } :host .mdc-dialog
+                        .mdc-dialog__container { width: 100vw; height: 100vh; }
+                        :host .mdc-dialog .mdc-dialog__surface {
+                          width: 100vw !important; height: 100vh !important; max-width: 100vw !important; max-height: 100vh !important;
+                          background: transparent !important; border-radius: 0 !important; box-shadow: none !important; overflow: hidden !important;
+                        } :host .mdc-dialog .mdc-dialog__title, :host
+                        .mdc-dialog .mdc-dialog__actions { display: none
+                        !important; opacity: 0 !important; height: 0 !important;
+                        } :host .mdc-dialog .mdc-dialog__content { padding: 0
+                        !important; overflow: hidden !important; }
+                      content:
+                        type: custom:mod-card
+                        style:
+                          .: |
+                            ha-card {
+                              position: fixed; inset: 0;
+                              background: rgba(10,10,10,0.18);
+                              backdrop-filter: blur(10px) saturate(120%);
+                              -webkit-backdrop-filter: blur(10px) saturate(120%);
+                              border-radius: 0; box-shadow: none;
+                              display: flex; align-items: center; justify-content: center;
+                              overflow: hidden;
+                            }
+                        card:
+                          type: vertical-stack
+                          cards:
+                            - type: custom:mod-card
+                              style:
+                                .: |
+                                  ha-card {
+                                    /* Add a slight delay to the initial appearance */
+                                    animation: fadeIn .3s ease-out;
+                                    animation-delay: .05s;
+                                    animation-fill-mode: both;
+                                  }
+                                  @keyframes fadeIn {
+                                    from { opacity: 0; }
+                                    to { opacity: 1; }
+                                  }
+                              card:
+                                type: vertical-stack
+                                cards:
+                                  - type: custom:button-card
+                                    show_name: false
+                                    show_icon: false
+                                    styles:
+                                      card:
+                                        - position: fixed
+                                        - inset: 0
+                                        - z-index: 0
+                                        - background: none
+                                        - box-shadow: none
+                                        - pointer-events: none
+                                      custom_fields:
+                                        bg:
+                                          - position: absolute
+                                          - left: 0
+                                          - top: 0
+                                          - width: 50%
+                                          - height: 300%
+                                          - padding: 16px 12px
+                                          - padding-top: 36vh
+                                          - color: "#00FFBF"
+                                          - opacity: 0.3
+                                          - text-shadow: 0 0 6px rgba(0,255,191,.45)
+                                          - font-family: >-
+                                              ui-monospace, SFMono-Regular, Menlo,
+                                              Consolas, monospace
+                                          - font-size: 14px
+                                          - line-height: 1.45
+                                          - overflow: hidden
+                                          - white-space: normal
+                                    custom_fields:
+                                      bg: |
+                                        [[[
+                                          function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+                                          const boot = [
+                                            '>\tSYSTEM BOOT SEQUENCE INITIATED...',
+                                            '>\tHA CORE KERNEL: ' + (hass.config?.version || 'unknown'),
+                                            '>\tTIMESTAMP: ' + new Date().toISOString(),
+                                            '',
+                                            '>> INTEGRATIONS LOADING:'
+                                          ];
+                                          const comps = hass.config?.components || [];
+                                          const uniq  = Array.from(new Set(comps.map(c => (c+'').split('.')[0]))).sort();
+                                          const lines = boot.concat(uniq.map(i => '>\t' + i.padEnd(34,'.') + ' [ OK ]'));
+                                          const msPer  = 60;
+                                          const firstN = 60;
+                                          const totalDelay = firstN * msPer + 200;
+                                          const copy = `
+                                            <div class="leftcol">
+                                              <div class="stream" style="animation: scrollLeft 140s linear infinite; animation-delay:${totalDelay}ms;">
+                                                ${lines.map((t,i)=>`
+                                                  <div class="line" style="animation-delay:${Math.min(i,firstN)*msPer}ms">${esc(t)}</div>
+                                                `).join('')}
+                                              </div>
+                                            </div>
+                                          `;
+                                          return copy + copy;
+                                        ]]]
+                                    extra_styles: >
+                                      .leftcol { position: absolute; inset: 0; }
+                                      .stream  { position: absolute; left: 0;
+                                      right: 0; top: 0; height: 300%;
+                                      white-space: normal; } .line {
+                                        white-space: pre;
+                                        opacity: 0;
+                                        transform: translateY(6px) scale(0.985);
+                                        filter: blur(0px);
+                                        animation: lineIn 1s ease-out forwards;
+                                        animation-delay: 2s;
+                                      } @keyframes lineIn {
+                                        to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+                                      } @keyframes scrollLeft {
+                                        from { transform: translateY(0); }
+                                        to   { transform: translateY(-66%); }
+                                      }
+                                  - type: markdown
+                                    card_mod:
+                                      style: >
+                                        ha-card { position: fixed; inset: 0;
+                                        z-index: 0; background: none;
+                                        box-shadow: none; pointer-events: none;
+                                        } ha-markdown {
+                                          position: absolute; top: 0; left: 50%; width: 50%; height: 300%;
+                                          padding: 16px 12px;
+                                          color: #7FD1FF;
+                                          opacity: 0.28;
+                                          text-shadow: 0 0 6px rgba(64,156,255,.45);
+                                          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                                          font-size: 14px; line-height: 1.45;
+                                          border-left: 1px dashed rgba(255,255,255,.06);
+                                          animation: scrollRight 54s linear infinite;
+                                        } @keyframes scrollRight { from {
+                                        transform: translateY(0); } to {
+                                        transform: translateY(-66%); } }
+                                    content: |
+                                      [[[
+                                        const fmt = d => d ? new Date(d).toLocaleTimeString() : '—';
+                                        let out = '>> AUTOMATIONS:\n';
+                                        const autos = Object.values(hass.states).filter(s => s.entity_id.startsWith('automation.'));
+                                        autos.sort((a,b)=>(b.attributes.last_triggered?new Date(b.attributes.last_triggered).getTime():0)-(a.attributes.last_triggered?new Date(a.attributes.last_triggered).getTime():0));
+                                        for (const a of autos.slice(0,120)) {
+                                          const n = a.attributes.friendly_name || a.entity_id;
+                                          out += `>\t${n}  [${(a.state||'').toUpperCase()}]  last: ${fmt(a.attributes.last_triggered)}\n`;
+                                        }
+                                        out += '\n>> SCRIPTS:\n';
+                                        const scripts = Object.values(hass.states).filter(s => s.entity_id.startsWith('script.'));
+                                        scripts.sort((a,b)=>(b.attributes.last_triggered?new Date(b.attributes.last_triggered).getTime():0)-(a.attributes.last_triggered?new Date(a.attributes.last_triggered).getTime():0));
+                                        for (const s of scripts.slice(0,120)) {
+                                          const n = s.attributes.friendly_name || s.entity_id;
+                                          out += `>\t${n}  [${(s.state||'').toUpperCase()}]  last: ${fmt(s.attributes.last_triggered)}\n`;
+                                        }
+                                        out += '\n>> ENTITY EVENTS (recent):\n';
+                                        const EX = ['persistent_notification.', 'config.'];
+                                        const ents = Object.values(hass.states).filter(e => !EX.some(p => e.entity_id.startsWith(p)));
+                                        for (let i = ents.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [ents[i], ents[j]]=[ents[j], ents[i]]; }
+                                        for (const e of ents.slice(0,180)) out += `[${fmt(e.last_changed)}] ${e.entity_id} → ${e.state}\n`;
+                                        return out + '\n' + out;
+                                      ]]]
+                                  - type: custom:mod-card
+                                    style:
+                                      .: |
+                                        ha-card {
+                                          position: relative; z-index: 1;
+                                          background: none; border-radius: 24px; box-shadow: none; padding: 0;
+                                          max-width: min(540px, 96vw); width: 100%;
+                                        }
+                                    card:
+                                      type: custom:mod-card
+                                      style:
+                                        .: |
+                                          ha-card {
+                                            background: rgba(40, 40, 40, 0.85);
+                                            backdrop-filter: blur(10px);
+                                            -webkit-backdrop-filter: blur(10px);
+                                            border-radius: 24px;
+                                            padding: 24px;
+                                            box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+                                          }
+                                      card:
+                                        type: vertical-stack
+                                        cards:
+                                          - type: custom:mod-card
+                                            style:
+                                              .: |
+                                                ha-card {
+                                                  overflow: hidden;
+                                                  transition: max-height 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.4s cubic-bezier(.2,.8,.2,1);
+                                                  {% if is_state('input_boolean.automation_kill_gate', 'on') %}
+                                                    max-height: 0;
+                                                    opacity: 0;
+                                                    padding: 0;
+                                                  {% else %}
+                                                    max-height: 300px;
+                                                    opacity: 1;
+                                                  {% endif %}
+                                                }
+                                            card:
+                                              type: vertical-stack
+                                              cards:
+                                                - type: markdown
+                                                  content: |
+                                                    [[[
+                                                      const snap = hass.states['sensor.automations_snapshot_storage']
+                                                                || hass.states['sensor.automations_snapshot_storage_2'] || {};
+                                                      const a = snap.attributes || {};
+                                                      const count = Number(a.count) || 0;
+                                                      const bcount = Number(a.bool_count) || 0;
+                                                      const total = count + bcount;
+
+                                                      const enEnt = hass.states['sensor.enabled_automations_count']
+                                                                 || hass.states['sensor.enabled_automations_count_2'];
+                                                      const en = enEnt ? Number(enEnt.state) || 0 : 0;
+
+                                                      if (en === 0 && total > 0) {
+                                                        return `## ${total} automations disabled.\n_Do you want to restore them?_`;
+                                                      }
+                                                      return "## Are you sure you want to kill all automations in the house?";
+                                                    ]]]
+                                                  style:
+                                                    .: >
+                                                      ha-card { background: none; box-shadow:
+                                                      none; text-align: center; color: white;
+                                                      } h2 { font-size: 18px; font-weight:
+                                                      500; margin: 0 0 8px 0; }
+                                                - type: grid
+                                                  columns: 2
+                                                  square: false
+                                                  cards:
+                                                    - type: custom:button-card
+                                                      name: |
+                                                        [[[
+                                                          const attrs = hass.states['sensor.automations_snapshot_storage']?.attributes || {};
+                                                          const csv   = (attrs.entities || '').trim();
+                                                          const count = csv ? csv.split(',').filter(Boolean).length : 0;
+                                                          const en    = Number(hass.states['sensor.enabled_automations_count']?.state) || 0;
+                                                          const restoreMode = (en === 0 && count > 0);
+                                                          return restoreMode ? "Restore previous" : "Yes, kill them";
+                                                        ]]]
+                                                      icon: |
+                                                        [[[
+                                                          const attrs = hass.states['sensor.automations_snapshot_storage']?.attributes || {};
+                                                          const csv   = (attrs.entities || '').trim();
+                                                          const count = csv ? csv.split(',').filter(Boolean).length : 0;
+                                                          const en    = Number(hass.states['sensor.enabled_automations_count']?.state) || 0;
+                                                          const restoreMode = (en === 0 && count > 0);
+                                                          return restoreMode ? "mdi:restore" : "mdi:alert-octagon";
+                                                        ]]]
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: |
+                                                          [[[
+                                                            const attrs = hass.states['sensor.automations_snapshot_storage']?.attributes || {};
+                                                            const csv   = (attrs.entities || '').trim();
+                                                            const count = csv ? csv.split(',').filter(Boolean).length : 0;
+                                                            const en    = Number(hass.states['sensor.enabled_automations_count']?.state) || 0;
+                                                            const restoreMode = (en === 0 && count > 0);
+                                                            return restoreMode ? 'script.turn_on' : 'input_boolean.turn_on';
+                                                          ]]]
+                                                        service_data: |
+                                                          [[[
+                                                            const attrs = hass.states['sensor.automations_snapshot_storage']?.attributes || {};
+                                                            const csv   = (attrs.entities || '').trim();
+                                                            const count = csv ? csv.split(',').filter(Boolean).length : 0;
+                                                            const en    = Number(hass.states['sensor.enabled_automations_count']?.state) || 0;
+                                                            const restoreMode = (en === 0 && count > 0);
+
+                                                            if (restoreMode) {
+                                                              // Restore path → call banner script WITHOUT requiring PIN
+                                                              return {
+                                                                entity_id: 'script.automations_toggle_banner',
+                                                                variables: { browser_id: 'this', skip_pin: true }
+                                                              };
+                                                            }
+
+                                                            // Kill path → open keypad (unchanged)
+                                                            return { entity_id: 'input_boolean.automation_kill_gate' };
+                                                          ]]]
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255, 74, 74, 0.1)
+                                                          - backdrop-filter: blur(10px)
+                                                          - border: 1px solid rgba(255, 74, 74, 0.5)
+                                                          - box-shadow: 0 0 8px rgba(255, 74, 74, 0.25)
+                                                          - color: white
+                                                        icon:
+                                                          - color: |
+                                                              [[[
+                                                                const attrs = hass.states['sensor.automations_snapshot_storage']?.attributes || {};
+                                                                const csv   = (attrs.entities || '').trim();
+                                                                const count = csv ? csv.split(',').filter(Boolean).length : 0;
+                                                                const en    = Number(hass.states['sensor.enabled_automations_count']?.state) || 0;
+                                                                const restoreMode = (en === 0 && count > 0);
+                                                                return restoreMode ? '#00FFBF' : '#ff4a4a';
+                                                              ]]]
+                                                        name:
+                                                          - font-weight: bold
+                                                    - type: custom:button-card
+                                                      name: No, cancel
+                                                      icon: mdi:check-circle
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: browser_mod.close_popup
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(64, 156, 255, 0.1)
+                                                          - backdrop-filter: blur(10px)
+                                                          - border: 1px solid rgba(64, 156, 255, 0.5)
+                                                          - box-shadow: 0 0 8px rgba(64, 156, 255, 0.25)
+                                                          - color: white
+                                                        icon:
+                                                          - color: "#409CFF"
+                                                        name:
+                                                          - font-weight: bold
+                                          - type: custom:mod-card
+                                            style:
+                                              .: |
+                                                ha-card {
+                                                  overflow: hidden;
+                                                  transition: max-height 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.4s cubic-bezier(.2,.8,.2,1);
+                                                  {% if is_state('input_boolean.automation_kill_gate', 'on') %}
+                                                    max-height: 500px;
+                                                    opacity: 1;
+                                                    padding: 12px;
+                                                  {% else %}
+                                                    max-height: 0;
+                                                    opacity: 0;
+                                                    padding: 0;
+                                                  {% endif %}
+                                                }
+                                            card:
+                                              type: vertical-stack
+                                              cards:
+                                                - type: custom:mod-card
+                                                  style:
+                                                    .: |
+                                                      ha-card {
+                                                        background: none;
+                                                        box-shadow: none;
+                                                        padding: 0;
+                                                        margin: 0 0 0px 0;
+                                                        min-height: 120px;
+                                                        display: flex;
+                                                        flex-direction: column;
+                                                        align-items: center;
+                                                        justify-content: flex-start;
+                                                      }
+                                                  card:
+                                                    type: vertical-stack
+                                                    cards:
+                                                      - type: markdown
+                                                        content: "### Enter code"
+                                                        card_mod:
+                                                          style: >-
+                                                            ha-card{background:none;box-shadow:none;color:#fff;text-align:center;}
+                                                      - type: custom:button-card
+                                                        entity: sensor.automation_kill_pin_dots
+                                                        show_icon: false
+                                                        show_name: false
+                                                        show_state: true
+                                                        styles:
+                                                          card:
+                                                            - background: rgba(255,255,255,0.08)
+                                                            - box-shadow: none
+                                                            - border: none
+                                                            - padding: 10px 18px
+                                                            - margin: 2px 0 6px 0
+                                                            - display: flex
+                                                            - align-items: center
+                                                            - justify-content: center
+                                                            - border-radius: 14px
+                                                            - width: 320px
+                                                            - height: 40px
+                                                          state:
+                                                            - color: white
+                                                            - font-size: 22px
+                                                            - letter-spacing: 10px
+                                                      - type: custom:button-card
+                                                        entity: sensor.automation_kill_pin_status
+                                                        show_icon: false
+                                                        show_name: false
+                                                        show_state: true
+                                                        styles:
+                                                          card:
+                                                            - background: none
+                                                            - box-shadow: none
+                                                            - border: none
+                                                            - padding: 0
+                                                            - margin: 0
+                                                            - display: flex
+                                                            - align-items: center
+                                                            - justify-content: center
+                                                          state:
+                                                            - justify-self: center
+                                                            - text-align: center
+                                                            - font-size: 13px
+                                                            - color: rgba(255,255,255,.85)
+                                                        state:
+                                                          - value: Correct code
+                                                            styles:
+                                                              state:
+                                                                - color: "#00FFBF"
+                                                                - filter: drop-shadow(0 0 6px rgba(0,255,191,.45))
+                                                          - value: Incorrect code
+                                                            styles:
+                                                              state:
+                                                                - color: "#FF6B6B"
+                                                                - filter: >-
+                                                                    drop-shadow(0 0 6px
+                                                                    rgba(255,107,107,.35))
+                                                - type: grid
+                                                  columns: 3
+                                                  square: false
+                                                  card_mod:
+                                                    style: >
+                                                      ha-card { padding: 0; }       /* no
+                                                      internal pad */
+
+                                                      #root{
+                                                        padding: 0 12px;            /* ← left/right inset (pick a value you like) */
+                                                        gap: 12px 12px;             /* row/col spacing */
+                                                        grid-template-columns: repeat(3, 1fr);
+                                                        justify-items: stretch;
+                                                        align-items: stretch;
+                                                        
+                                                      }
+                                                  cards:
+                                                    - type: custom:button-card
+                                                      name: "1"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "1"
+                                                    - type: custom:button-card
+                                                      name: "2"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "2"
+                                                    - type: custom:button-card
+                                                      name: "3"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "3"
+                                                    - type: custom:button-card
+                                                      name: "4"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "4"
+                                                    - type: custom:button-card
+                                                      name: "5"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "5"
+                                                    - type: custom:button-card
+                                                      name: "6"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "6"
+                                                    - type: custom:button-card
+                                                      name: "7"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "7"
+                                                    - type: custom:button-card
+                                                      name: "8"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "8"
+                                                    - type: custom:button-card
+                                                      name: "9"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "9"
+                                                    - type: custom:button-card
+                                                      name: X
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.backspace_kill_pin
+                                                    - type: custom:button-card
+                                                      name: "0"
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.append_digit_to_kill_pin
+                                                        service_data:
+                                                          digit: "0"
+                                                    - type: custom:button-card
+                                                      name: Clear
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255,255,255,0.05)
+                                                          - box-shadow: none
+                                                          - color: white
+                                                          - margin-bottom: 16px;
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: input_text.set_value
+                                                        service_data:
+                                                          entity_id: input_text.automation_kill_pin_entered
+                                                          value: ""
+                                                - type: grid
+                                                  columns: 2
+                                                  square: false
+                                                  card_mod:
+                                                    style: |
+                                                      ha-card { padding: 0; }
+                                                      #root   {
+                                                        padding: 0px 12px;      /* ← same value as keypad */
+                                                        gap: 12px 12px;
+                                                        grid-template-columns: 1fr 1fr;
+                                                        justify-items: stretch;
+                                                        align-items: stretch;
+                                                      }
+                                                  cards:
+                                                    - type: custom:button-card
+                                                      name: Confirm
+                                                      icon: mdi:check-circle
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: script.turn_on
+                                                        service_data:
+                                                          entity_id: script.automations_toggle_banner
+                                                          variables:
+                                                            code: |
+                                                              [[[
+                                                                return (hass.states['input_text.automation_kill_pin_entered']?.state || '').trim();
+                                                              ]]]
+                                                            browser_id: this
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(0, 255, 191, 0.1)
+                                                          - backdrop-filter: blur(10px)
+                                                          - border: 1px solid rgba(0, 255, 191, 0.5)
+                                                          - box-shadow: 0 0 8px rgba(0, 255, 191, 0.25)
+                                                          - color: white
+                                                        icon:
+                                                          - color: "#00FFBF"
+                                                        name:
+                                                          - font-weight: 700
+                                                    - type: custom:button-card
+                                                      name: Cancel
+                                                      icon: mdi:close
+                                                      tap_action:
+                                                        action: call-service
+                                                        service: input_boolean.turn_off
+                                                        service_data:
+                                                          entity_id: input_boolean.automation_kill_gate
+                                                      styles:
+                                                        card:
+                                                          - border-radius: 12px
+                                                          - background: rgba(255, 74, 74, 0.1)
+                                                          - backdrop-filter: blur(10px)
+                                                          - border: 1px solid rgba(255, 74, 74, 0.5)
+                                                          - box-shadow: 0 0 8px rgba(255, 74, 74, 0.25)
+                                                          - color: white
+                                                        icon:
+                                                          - color: "#ff4a4a"
+                                                        name:
+                                                          - font-weight: 700
+          custom_fields:
+            icon: |
+              [[[
+                const en = Number(hass.states['sensor.enabled_automations_count']?.state) || 0;
+                const src = en > 0 ? '/local/Quickfire/automationon.png' : '/local/Quickfire/automationoff.png';
+
+                const now = Date.now();
+                const ms = d => d ? new Date(d).getTime() : 0;
+                const autos   = Object.values(hass.states).filter(s => s.entity_id.startsWith('automation.'));
+                const scripts = Object.values(hass.states).filter(s => s.entity_id.startsWith('script.'));
+                const n = autos.filter(a => now - ms(a.attributes.last_triggered) < 60000).length
+                        + scripts.filter(s => now - ms(s.attributes.last_triggered) < 60000).length;
+
+                return `
+                  <div style="position:relative; display:inline-block;">
+                    <img src="${src}" style="height:60px; ${en>0 ? '' : 'opacity:0.6;'}">
+                    ${n > 0 ? `
+                      <span style="
+                        position:absolute; top:5px; right:-6px;
+                        height:18px; min-width:14px; padding:0 6px;
+                        display:flex; align-items:center; justify-content:center;
+                        font-size:10px; line-height:18px; font-weight:700;
+                        color:#fff; border-radius:999px;
+                        background: linear-gradient(135deg, rgba(255,180,0,.95), rgba(255,98,0,.95));
+                        box-shadow: 0 2px 6px rgba(0,0,0,.35);
+                        border: 1px solid rgba(255,255,255,.35);
+                      ">${n}</span>` : ``}
+                  </div>`;
+              ]]]
+          styles:
+            card:
+              - border-radius: 14px
+              - padding: 0.3rem
+              - background: none
+              - box-shadow: none
+            grid:
+              - grid-template-areas: "\"icon\" \"n\""
+              - grid-template-rows: 1fr auto
+            name:
+              - font-size: 14px
+              - font-weight: 500
+              - justify-self: center
+              - padding-top: 0px
+            custom_fields:
+              icon:
+                - display: flex
+                - justify-content: center
+                - align-items: center
