@@ -3,6 +3,7 @@
 ![Screenshot_20251208_223111_Fully Kiosk Browser](https://github.com/user-attachments/assets/0ee04375-9042-4334-9e10-87b6ade4f304)
 
 **Conceptualised, designed and coded by Malaka Jayawardene.**
+
 Disclaimer: Some complex yaml have been generated using ChatGPT, Gemini, and Claude and later edited/customised to fit purpose.
 
 **This is a highly user-specific Home Assistant dashboard.**  
