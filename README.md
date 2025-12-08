@@ -383,8 +383,6 @@ Behaviour:
 This file defines the complete set of glassmorphic **room summary cards** used across the home dashboard.  
 They provide presence, temperature, automation, lighting, fans, blind controls, and door-state indicators.
 
----
-
 ## Dependencies
 
 - `custom:button-card`
@@ -405,8 +403,6 @@ They provide presence, temperature, automation, lighting, fans, blind controls, 
 ---
 
 ## Entities Used (grouped by room)
-
----
 
 ### **Lounge**
 - **Presence**
@@ -757,7 +753,7 @@ Make sure they are installed (e.g. via HACS) and added to your Lovelace `resourc
 ---
 ---
 
-## SURVEILLANCE CARD
+### SURVEILLANCE CARD
 
 This card defines a glassmorphic **surveillance overview panel** that shows:
 
