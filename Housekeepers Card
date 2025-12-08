@@ -1,0 +1,664 @@
+type: custom:mod-card
+card_mod:
+  style:
+    .: |
+      ha-card {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0.6rem;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(151, 87, 167, 0.2), rgba(75, 124, 132, 0.2));
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25),
+                    inset 0 0 8px rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+card:
+  type: vertical-stack
+  cards:
+    - type: custom:mod-card
+      style:
+        layout: horizontal
+        justify-content: space-between
+        align-items: center
+        padding: 4px 12px
+        height: 36px
+        background: none
+        box-shadow: none
+        border: none
+      card:
+        type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            tap_action:
+              action: none
+            show_icon: false
+            show_state: false
+            show_name: false
+            custom_fields:
+              content: |
+                <span class="hk">House Keepers</span> <span class="hk-text">
+                  <span class="marq">
+                    <span class="blk"></span>
+                    <span class="blk"></span>
+                  </span>
+                </span>
+            styles:
+              card:
+                - background: none
+                - box-shadow: none
+                - height: 18px
+                - padding: 0
+                - margin: 0
+                - font-size: 16px
+                - font-weight: bold
+                - color: white
+                - justify-content: flex-start
+                - align-items: center
+                - border: none
+                - margin-bottom: "-12px"
+              custom_fields:
+                content:
+                  - margin-left: 110px
+                  - display: flex
+                  - flex-direction: row
+                  - align-items: center
+                  - gap: 0px
+                  - overflow: visible
+                  - position: relative
+            card_mod:
+              style: |
+                {% set any_active =
+                     is_state('input_boolean.hk1_active','on') or
+                     is_state('input_boolean.hk2_active','on') or
+                     is_state('input_boolean.hk3_active','on') %}
+                {% set any_returning =
+                     is_state('input_boolean.hk1_returning','on') or
+                     is_state('input_boolean.hk2_returning','on') or
+                     is_state('input_boolean.hk3_returning','on') %}
+                {% set any_left = any_active or any_returning %}
+
+                /* Title animation */
+                .hk {
+                  display: inline-block;
+                  will-change: transform;
+                  transition: transform 0.3s ease-out;
+                  transform:
+                    {% if any_left %}
+                      translateX(-100px);
+                    {% else %}
+                      translateX(-74px);
+                    {% endif %};
+                }
+
+                /* Status line */
+                .hk-text {
+                  display: inline-block;
+                  font-size: 9px;
+                  font-family: "Consolas", monospace;
+                  line-height: 16px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  max-width: 196px;
+
+                  opacity: {% if any_left %}1{% else %}0{% endif %};
+                  transform:
+                    {% if any_left %}
+                      translateX(-90px);
+                    {% else %}
+                      translateX(10px);
+                    {% endif %};
+                  filter: {% if any_left %}blur(0px){% else %}blur(4px){% endif %};
+                  transition: all 0.4s ease-out;
+
+                  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+                          mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+                }
+
+                /* Marquee: duplicate the same line twice and scroll */
+                .marq {
+                  display: inline-block;
+                  white-space: nowrap;
+                  will-change: transform;
+                  animation: hk-scroll 18s linear infinite;
+                }
+                .blk { display: inline-block; padding-right: 12px; }
+
+                /* Inject sensor text WITHOUT rebuilding DOM */
+                .blk::before {
+                  content: "{{ (states('sensor.housekeepers_status') or '') | replace('\\','\\\\') | replace('\"','\\\"') }}  •  ";
+                }
+
+                @keyframes hk-scroll {
+                  0%   { transform: translate3d(0,0,0); }
+                  100% { transform: translate3d(-50%,0,0); }
+                }
+    - type: horizontal-stack
+      cards:
+        # --- Housekeeper 1 ----------------------------------------------------
+        - type: vertical-stack
+          cards:
+            - type: custom:button-card
+              tap_action:
+                action: javascript
+                launch: |
+                  [[[
+                    fully.startApplication('com.eco.global.app')
+                  ]]]
+              show_name: false
+              show_icon: false
+              show_state: false
+              custom_fields:
+                img: >
+                  <img src="/local/Housekeepers/RoboCrop320.png" style="width:
+                  100%; height: auto;" />
+              styles:
+                card:
+                  - background: none
+                  - box-shadow: none
+                  - padding: 0
+                  - height: auto
+                  - margin-bottom: "-16px"
+                custom_fields:
+                  img:
+                    - width: 100%
+            - type: custom:mod-card
+              style:
+                .: |
+                  ha-card {
+                    background: none;
+                    box-shadow: none;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
+              card:
+                type: horizontal-stack
+                cards:
+                  # Pause / play-pause
+                  - type: custom:button-card
+                    entity: input_boolean.hk1_active
+                    show_name: false
+                    show_icon: true
+                    icon: >
+                      [[[ return states['input_boolean.hk1_paused'].state
+                      === 'on' ? 'mdi:play-pause' : 'mdi:pause'; ]]]
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.toggle
+                      service_data:
+                        entity_id: input_boolean.hk1_paused
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(0,255,0,0.4),
+                            rgba(0,255,0,0.1))
+                        - box-shadow: >
+                            0 4px 10px rgba(0,0,0,0.25), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 0
+                        - transform: scale(1) translateX(50px)
+                        - filter: blur(4px)
+                        - pointer-events: none
+                        - transition: all 0.4s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk1_active', 'on') %}
+                        ha-card {
+                          opacity: 1 !important;
+                          transform: scale(1) translateX(20px) !important;
+                          filter: blur(0px) !important;
+                          pointer-events: auto !important;
+                        }
+                        {% endif %}
+                  # Play
+                  - type: custom:button-card
+                    entity: input_boolean.hk1_active
+                    show_name: false
+                    show_icon: true
+                    icon: mdi:play
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.turn_on
+                      service_data:
+                        entity_id: input_boolean.hk1_active
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(0,255,0,0.4),
+                            rgba(0,255,0,0.1))
+                        - box-shadow: >
+                            0 4px 12px rgba(0,0,0,0.3), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 1
+                        - transform: scale(1) translateX(0px)
+                        - filter: blur(0px)
+                        - pointer-events: auto
+                        - transition: all 0.35s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk1_active', 'on') %}
+                        ha-card {
+                          opacity: 0 !important;
+                          transform: scale(0.8) translateX(0px) !important;
+                          filter: blur(4px) !important;
+                          pointer-events: none !important;
+                        }
+                        {% endif %}
+                  # Home / returning
+                  - type: custom:button-card
+                    entity: input_boolean.hk1_active
+                    show_name: false
+                    show_icon: true
+                    icon: mdi:home
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.turn_on
+                      service_data:
+                        entity_id: input_boolean.hk1_returning
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(0,255,0,0.4),
+                            rgba(0,255,0,0.1))
+                        - box-shadow: >
+                            0 4px 10px rgba(0,0,0,0.25), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 0
+                        - transform: scale(1) translateX(-50px)
+                        - filter: blur(4px)
+                        - pointer-events: none
+                        - transition: all 0.4s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk1_active', 'on') %}
+                        ha-card {
+                          opacity: 1 !important;
+                          transform: scale(1) translateX(-20px) !important;
+                          filter: blur(0px) !important;
+                          pointer-events: auto !important;
+                        }
+                        {% endif %}
+
+        # --- Housekeeper 2 ----------------------------------------------------
+        - type: vertical-stack
+          cards:
+            - type: custom:button-card
+              tap_action:
+                action: javascript
+                launch: |
+                  [[[
+                    fully.startApplication('com.eufylife.smarthome')
+                  ]]]
+              show_name: false
+              show_icon: false
+              show_state: false
+              custom_fields:
+                img: >
+                  <img src="/local/Housekeepers/OptimusGrime320.png"
+                  style="width: 100%; height: auto;" />
+              styles:
+                card:
+                  - background: none
+                  - box-shadow: none
+                  - padding: 0
+                  - height: auto
+                  - margin-bottom: "-16px"
+                custom_fields:
+                  img:
+                    - width: 100%
+            - type: custom:mod-card
+              style:
+                .: |
+                  ha-card {
+                    background: none;
+                    box-shadow: none;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
+              card:
+                type: horizontal-stack
+                cards:
+                  # Pause / play-pause
+                  - type: custom:button-card
+                    entity: input_boolean.hk2_active
+                    show_name: false
+                    show_icon: true
+                    icon: >
+                      [[[ return
+                      states['input_boolean.hk2_paused'].state === 'on'
+                      ? 'mdi:play-pause' : 'mdi:pause'; ]]]
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.toggle
+                      service_data:
+                        entity_id: input_boolean.hk2_paused
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(0,128,255,0.3),
+                            rgba(0,128,255,0.1))
+                        - box-shadow: >
+                            0 4px 10px rgba(0,0,0,0.25), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 0
+                        - transform: scale(1) translateX(50px)
+                        - filter: blur(4px)
+                        - pointer-events: none
+                        - transition: all 0.4s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk2_active',
+                        'on') %}
+                        ha-card {
+                          opacity: 1 !important;
+                          transform: scale(1) translateX(20px) !important;
+                          filter: blur(0px) !important;
+                          pointer-events: auto !important;
+                        }
+                        {% endif %}
+                  # Play
+                  - type: custom:button-card
+                    entity: input_boolean.hk2_active
+                    show_name: false
+                    show_icon: true
+                    icon: mdi:play
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.turn_on
+                      service_data:
+                        entity_id: input_boolean.hk2_active
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(0,128,255,0.3),
+                            rgba(0,128,255,0.1))
+                        - box-shadow: >
+                            0 4px 12px rgba(0,0,0,0.3), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 1
+                        - transform: scale(1) translateX(0px)
+                        - filter: blur(0px)
+                        - pointer-events: auto
+                        - transition: all 0.35s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk2_active',
+                        'on') %}
+                        ha-card {
+                          opacity: 0 !important;
+                          transform: scale(0.8) translateX(0px) !important;
+                          filter: blur(4px) !important;
+                          pointer-events: none !important;
+                        }
+                        {% endif %}
+                  # Home / dock via script
+                  - type: custom:button-card
+                    entity: input_boolean.hk2_active
+                    show_name: false
+                    show_icon: true
+                    icon: mdi:home
+                    tap_action:
+                      action: call-service
+                      service: script.turn_on
+                      service_data:
+                        entity_id: script.hk2_stop_and_reset_ui
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(0,128,255,0.3),
+                            rgba(0,128,255,0.1))
+                        - box-shadow: >
+                            0 4px 10px rgba(0,0,0,0.25), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 0
+                        - transform: scale(1) translateX(-50px)
+                        - filter: blur(4px)
+                        - pointer-events: none
+                        - transition: all 0.4s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk2_active',
+                        'on') %}
+                        ha-card {
+                          opacity: 1 !important;
+                          transform: scale(1) translateX(-20px) !important;
+                          filter: blur(0px) !important;
+                          pointer-events: auto !important;
+                        }
+                        {% endif %}
+
+        # --- Housekeeper 3 ----------------------------------------------------
+        - type: vertical-stack
+          cards:
+            - type: custom:button-card
+              tap_action:
+                action: javascript
+                launch: |
+                  [[[
+                    fully.startApplication('com.dreame.smartlife')
+                  ]]]
+              show_name: false
+              show_icon: false
+              show_state: false
+              custom_fields:
+                img: >
+                  <img src="/local/Housekeepers/FurminatorNew.png" style="width:
+                  100%; height: auto; margin-top: 6px;" />
+              styles:
+                card:
+                  - background: none
+                  - box-shadow: none
+                  - padding: 0
+                  - height: auto
+                  - margin-bottom: "-22px"
+                custom_fields:
+                  img:
+                    - width: 100%
+            - type: custom:mod-card
+              style:
+                .: |
+                  ha-card {
+                    background: none;
+                    box-shadow: none;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
+              card:
+                type: horizontal-stack
+                cards:
+                  # Pause / play-pause
+                  - type: custom:button-card
+                    entity: input_boolean.hk3_active
+                    show_name: false
+                    show_icon: true
+                    icon: >
+                      [[[ return states['input_boolean.hk3_paused'].state
+                      === 'on' ? 'mdi:play-pause' : 'mdi:pause'; ]]]
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.toggle
+                      service_data:
+                        entity_id: input_boolean.hk3_paused
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(255,140,0,0.4),
+                            rgba(255,140,0,0.1))
+                        - box-shadow: >
+                            0 4px 10px rgba(0,0,0,0.25), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 0
+                        - transform: scale(1) translateX(50px)
+                        - filter: blur(4px)
+                        - pointer-events: none
+                        - transition: all 0.4s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk3_active', 'on')
+                        %}
+                        ha-card {
+                          opacity: 1 !important;
+                          transform: scale(1) translateX(20px) !important;
+                          filter: blur(0px) !important;
+                          pointer-events: auto !important;
+                        }
+                        {% endif %}
+                  # Play
+                  - type: custom:button-card
+                    entity: input_boolean.hk3_active
+                    show_name: false
+                    show_icon: true
+                    icon: mdi:play
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.turn_on
+                      service_data:
+                        entity_id: input_boolean.hk3_active
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(255,140,0,0.4),
+                            rgba(255,140,0,0.1))
+                        - box-shadow: >
+                            0 4px 12px rgba(0,0,0,0.3), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 1
+                        - transform: scale(1) translateX(0px)
+                        - filter: blur(0px)
+                        - pointer-events: auto
+                        - transition: all 0.35s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk3_active', 'on')
+                        %}
+                        ha-card {
+                          opacity: 0 !important;
+                          transform: scale(0.8) translateX(0px) !important;
+                          filter: blur(4px) !important;
+                          pointer-events: none !important;
+                        }
+                        {% endif %}
+                  # Home / returning
+                  - type: custom:button-card
+                    entity: input_boolean.hk3_active
+                    show_name: false
+                    show_icon: true
+                    icon: mdi:home
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.turn_on
+                      service_data:
+                        entity_id: input_boolean.hk3_returning
+                    styles:
+                      card:
+                        - width: 32px
+                        - height: 32px
+                        - border-radius: 50%
+                        - background: >
+                            linear-gradient(145deg, rgba(255,140,0,0.4),
+                            rgba(255,140,0,0.1))
+                        - box-shadow: >
+                            0 4px 10px rgba(0,0,0,0.25), inset 0 1px 1px
+                            rgba(255,255,255,0.2)
+                        - display: flex
+                        - justify-content: center
+                        - align-items: center
+                        - opacity: 0
+                        - transform: scale(1) translateX(-50px)
+                        - filter: blur(4px)
+                        - pointer-events: none
+                        - transition: all 0.4s ease
+                      icon:
+                        - color: white
+                        - width: 20px
+                    card_mod:
+                      style: |
+                        {% if is_state('input_boolean.hk3_active', 'on')
+                        %}
+                        ha-card {
+                          opacity: 1 !important;
+                          transform: scale(1) translateX(-20px) !important;
+                          filter: blur(0px) !important;
+                          pointer-events: auto !important;
+                        }
+                        {% endif %}
