@@ -1,0 +1,245 @@
+## Room Summary Cards – Full Set (All Rooms)
+#
+# This file defines the complete set of glassmorphic Room Summary Cards for the entire home:
+#
+# - Lounge
+# - Hallway
+# - Kitchen / Dining / Living
+# - WC
+# - Garage
+# - Stairs to Foyer / Landing
+# - Master Bedroom (with inline Somfy blind controls)
+# - Ensuite
+# - Room 2 (with inline Somfy blind controls)
+# - Room 3 (with inline Somfy blind controls)
+# - Room 4 (with inline Somfy blind controls)
+# - Study (with inline Somfy blind controls)
+# - Washroom
+#
+# Each card includes:
+# - Presence detection (FP2 or proxy source)
+# - Temperature & climate indicators
+# - Automation toggles
+# - Light controls and grouped light actions
+# - Fan controls (where applicable)
+# - Door sensors (WC, Ensuite, Washroom)
+# - Expandable inline Somfy blind controls (Lounge, Rooms 2–4, Master, Study)
+#
+# ——————————————————————————————————————————
+# REQUIRED ENTITIES (grouped by area)
+# ——————————————————————————————————————————
+#
+# Lounge
+#   Presence:
+#     - binary_sensor.lounge_fp2_presence
+#   Temperature / Climate:
+#     - climate.lounge_thermostat
+#     - sensor.lounge_current_temperature
+#   Automation:
+#     - input_boolean.lounge_light_control
+#   Lights:
+#     - binary_sensor.lounge_any_light_on
+#     - script.lounge_toggle_all_lights
+#   Fan:
+#     - fan.kitchen_fan
+#   Blinds:
+#     - cover.lounge_shutter
+#     - input_boolean.lounge_blinds_expanded
+#     - input_boolean.lounge_blinds_collapsed
+#     - input_select.lounge_blinds_last_command
+#     - script.lounge_blinds_boolean_toggle
+#     - script.control_blinds
+#
+# Hallway
+#   Presence:
+#     - binary_sensor.presence_sensor_fp2_b046_presence_sensor_1
+#   Temperature / Climate:
+#     - climate.hallway_thermostat
+#     - sensor.hallway_current_temperature
+#   Automation:
+#     - input_boolean.upstairs_stairway_and_hallway_light_automation
+#   Lights:
+#     - light.hallway_lights
+#
+# Kitchen / Dining / Living
+#   Presence:
+#     - binary_sensor.kitchen_dining_living_fp2_overallpresence
+#   Temperature / Climate:
+#     - climate.kitchen_thermostat
+#     - sensor.kitchen_current_temperature
+#   Automation:
+#     - input_boolean.kitchen_automation
+#   Lights:
+#     - binary_sensor.kitchen_any_light_on
+#     - script.kitchen_toggle_all_lights
+#   Fan:
+#     - fan.kitchen_fan
+#
+# WC
+#   Presence:
+#     - binary_sensor.wc_motion_sensor_2
+#   Temperature / Climate:
+#     - climate.wc_thermostat
+#     - sensor.wc_current_temperature
+#   Automation:
+#     - input_boolean.wc_automation
+#   Lights:
+#     - light.wc_light
+#   Door:
+#     - binary_sensor.wc_door_sensor1
+#
+# Garage
+#   Automation:
+#     - input_boolean.garage_automation
+#   Lights:
+#     - light.garage_light
+#
+# Stairs to Foyer / Landing
+#   Presence:
+#     - binary_sensor.upstairs_fp2_overallpresence
+#   Automation:
+#     - input_boolean.upstairs_stairway_and_hallway_light_automation
+#   Lights:
+#     - switch.smart_switch_2211283432205855080548e1e9b1820f_outlet
+#     - light.stairway_light
+#
+# Master Bedroom
+#   Presence:
+#     - binary_sensor.master_bedroom_fp2_presence_sensor_1
+#   Temperature / Climate:
+#     - sensor.linknlink_e04b41006845_temperature
+#   Automation:
+#     - input_boolean.master_bedroom_automation
+#   Lights:
+#     - binary_sensor.master_bedroom_any_light_on
+#     - script.master_bedroom_toggle_all_lights
+#   Fan:
+#     - input_boolean.master_bedroom
+#   Blinds:
+#     - cover.master_bedroom_shutter
+#     - input_boolean.master_bedroom_blinds_expanded
+#     - input_boolean.master_bedroom_blinds_collapsed
+#     - input_select.master_bedroom_blinds_last_command
+#     - script.master_bedroom_blinds_boolean_toggle
+#     - script.control_blinds
+#
+# Ensuite
+#   Presence:
+#     - binary_sensor.ensuite_presence
+#   Temperature / Climate:
+#     - climate.ensuite_thermostat
+#     - sensor.ensuite_current_temperature
+#   Automation:
+#     - input_boolean.ensuite_automation
+#   Lights:
+#     - light.ensuite_light
+#   Door:
+#     - binary_sensor.ensuite_door_sensor
+#
+# Room 2
+#   Presence:
+#     - binary_sensor.room_2_presence
+#   Temperature / Climate:
+#     - climate.room_2_thermostat
+#     - sensor.room_2_current_temperature
+#   Automation:
+#     - input_boolean.room_2_automation
+#   Lights:
+#     - binary_sensor.room_2_any_light_on
+#     - script.room_2_toggle_all_lights
+#     - light.room2_light
+#   Blinds:
+#     - cover.room_2_shutter
+#     - input_boolean.room_2_blinds_expanded
+#     - input_boolean.room_2_blinds_collapsed
+#     - input_select.room_2_blinds_last_command
+#     - script.room_2_blinds_boolean_toggle
+#     - script.control_blinds
+#
+# Room 3
+#   Presence:
+#     - binary_sensor.room_3_presence
+#   Temperature / Climate:
+#     - climate.room_3_thermostat
+#     - sensor.room_3_current_temperature
+#   Automation:
+#     - input_boolean.room_3_automation
+#   Lights:
+#     - light.room3_light
+#   Fan:
+#     - fan.room_3_fan
+#   Blinds:
+#     - cover.room_3_shutter
+#     - input_boolean.room_3_blinds_expanded
+#     - input_boolean.room_3_blinds_collapsed
+#     - input_select.room_3_blinds_last_command
+#     - script.room_3_blinds_boolean_toggle
+#     - script.control_blinds
+#
+# Room 4
+#   Presence:
+#     - light.room_4_light
+#   Temperature / Climate:
+#     - climate.room_4_thermostat
+#     - sensor.room_4_current_temperature
+#   Automation:
+#     - input_boolean.room_4_automation
+#   Lights:
+#     - light.room_4_light
+#   Fan:
+#     - fan.room_3_fan
+#   Blinds:
+#     - cover.room_4_shutter
+#     - input_boolean.room_4_blinds_expanded
+#     - input_boolean.room_4_blinds_collapsed
+#     - input_select.room_4_blinds_last_command
+#     - script.room_4_blinds_boolean_toggle
+#     - script.control_blinds
+#
+# Study
+#   Presence:
+#     - binary_sensor.study_fp2_presence_sensor_2
+#   Temperature / Climate:
+#     - climate.study_thermostat
+#     - sensor.study_current_temperature
+#   Automation:
+#     - input_boolean.study_automation
+#   Lights:
+#     - binary_sensor.study_any_light_on
+#     - script.study_toggle_all_lights
+#   Fan:
+#     - fan.study_fan
+#   Blinds:
+#     - cover.study_shutter
+#     - input_boolean.study_blinds_expanded
+#     - input_boolean.study_blinds_collapsed
+#     - input_select.study_blinds_last_command
+#     - script.study_blinds_boolean_toggle
+#     - script.control_blinds
+#
+# Washroom
+#   Presence:
+#     - binary_sensor.washroom_presence
+#   Temperature / Climate:
+#     - climate.washroom_thermostat
+#     - sensor.washroom_current_temperature
+#   Automation:
+#     - input_boolean.washroom_automation
+#   Lights:
+#     - light.washroom_light
+#   Door:
+#     - binary_sensor.contact_sensor
+#
+# ——————————————————————————————————————————
+# DEPENDENCIES
+# ——————————————————————————————————————————
+#   - custom:button-card
+#   - custom:stack-in-card
+#   - custom:card-mod
+#
+#   Scripts referenced:
+#     - script.control_blinds
+#     - script.*_toggle_all_lights
+#     - script.*_blinds_boolean_toggle
+#
+
