@@ -4,9 +4,9 @@
 
 **Conceptualised, designed and coded by Malaka Jayawardene.**
 
-_Disclaimer: 
-> **Important:** This is a highly user-specific Home Assistant dashboard.  
-> The YAML in this repository will **not** function out-of-the-box on other systems due to unique helpers, sensors, custom logic, and tailored UI behaviour._
+_Disclaimer:_
+**Important:** This is a highly user-specific Home Assistant dashboard.  
+The YAML in this repository will **not** function out-of-the-box on other systems due to unique helpers, sensors, custom logic, and tailored UI behaviour._
 
 Instead, **use this repo as a guide** to learn and adopt:
 - Styling techniques  
