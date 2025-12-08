@@ -4,7 +4,7 @@
 
 **Conceptualised, designed and coded by Malaka Jayawardene.**
 
-Disclaimer: Some complex yaml have been generated using ChatGPT, Gemini, and Claude and later edited/customised to fit purpose.
+_Disclaimer: Some complex yaml have been generated using ChatGPT, Gemini, and Claude and later highly optimised and customised to fit purpose._
 
 **This is a highly user-specific Home Assistant dashboard.**  
 The YAML in this repository will _not_ function out-of-the-box on other systems due to unique helpers, sensors, custom logic, and tailored UI behaviour.  
