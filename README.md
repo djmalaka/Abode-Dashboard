@@ -36,10 +36,10 @@ Each folder contains a self-contained part of the UI:
 - **Media Station** — speaker groups, requests, transfers 
 - **Room Cards** — glassmorphic room tiles with presence, lights, climate, blinds
 - **Location Card** - Based on a sleek combination of iOS shortcuts and webhooks (will post a separate guide on this in due course as currently only YAML behind the card is included)
-- **Surveillance Surveillance ** — live camera streams & motion states
+- **Surveillance Surveillance** — live camera streams & motion states
 - **Housekeepers Card** — robot vacuums & mower control    
 - **Quickfire Controls** — lights, climate, blinds, automations
-- **Scripts & Helpers** — logic powering UI behaviour  
+- **Scripts & Helpers** — logic powering UI behaviour (will be updating this in due course)
 
 Use these as references to understand layout, structure, and design patterns.
 
