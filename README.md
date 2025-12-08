@@ -1,5 +1,8 @@
 # ✨ Abode Dashboard (Home Assistant)
 
+![Screenshot_20251208_223111_Fully Kiosk Browser](https://github.com/user-attachments/assets/0ee04375-9042-4334-9e10-87b6ade4f304)
+
+
 > **This is a highly user-specific Home Assistant dashboard.**  
 > The YAML in this repository will _not_ function out-of-the-box on other systems due to unique helpers, sensors, custom logic, and tailored UI behaviour.  
 >
@@ -91,6 +94,7 @@ Most UI elements rely on:
 - **card-mod**  v3.4.5
 - **slider-entity-row**  v17.4.1
 - **state-switch**  v1.9.6
+- **bubble card**  v3.0.4 
 - **thermostat-card** (HA native)  
 
 Make sure these are installed before attempting to use any examples.
@@ -108,7 +112,7 @@ Many UI elements depend on:
 - ETA & presence processing  
 - Media control scripts  
 
-You’ll need equivalents adapted to your setup.
+You’ll need equivalents adapted to your setup. The separate scripts section will soon be added.
 
 ---
 
