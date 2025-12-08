@@ -135,6 +135,7 @@ If you find ideas here useful, feel free to ⭐ star the repo or share screensho
 ## 📦 What’s Included in the Abode Dashboard?
 
 
+<h1 style="color:#8AB4F8; font-weight:700;">Clock & Weather Card</h1>
 ### CLOCK WEATHER CARD
 
 <img width="546" height="409" alt="image" src="https://github.com/user-attachments/assets/f47f4701-2a35-4325-925f-70505247392d" />
