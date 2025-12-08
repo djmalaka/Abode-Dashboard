@@ -135,7 +135,7 @@ If you find ideas here useful, feel free to ⭐ star the repo or share screensho
 ## 📦 What’s Included in the Abode Dashboard?
 
 
-<h1 style="color:#8AB4F8; font-weight:700;">Clock & Weather Card</h1>
+<h1 style="color:#8AB4F8; font-weight:700;">CLOCK & WEATHER CARD</h1>
 
 <img width="546" height="409" alt="image" src="https://github.com/user-attachments/assets/f47f4701-2a35-4325-925f-70505247392d" />
 
@@ -301,7 +301,7 @@ Electricity + gas cost sensors:
 ---
 ---
 
-### MEDIA CENTRE CARD
+<h1 style="color:#8AB4F8; font-weight:700;">MEDIA CENTRE CARD</h1>
 
 <img width="562" height="285" alt="image" src="https://github.com/user-attachments/assets/a31254cf-d2b3-4913-9197-4897d4ca8374" />
 
@@ -530,7 +530,7 @@ Behaviour:
 ---
 ---
 
-### ROOM CARDS
+<h1 style="color:#8AB4F8; font-weight:700;">ROOMS CARD</h1>
 
 <img width="571" height="825" alt="image" src="https://github.com/user-attachments/assets/82814fa8-5606-467d-9b99-a27d711f86df" />
 
@@ -785,7 +785,7 @@ They provide presence, temperature, automation, lighting, fans, blind controls, 
 ---
 ---
 
-### LOCATION, TRAVEL PROGRESS & SECURITY CARD 
+<h1 style="color:#8AB4F8; font-weight:700;">LOCATION, TRAVEL PROGRESS & SECURITY CARD</h1>
 
 <img width="562" height="221" alt="image" src="https://github.com/user-attachments/assets/c03e8f50-c6b2-40b8-9ca2-601fb19044f3" />
 
@@ -910,7 +910,7 @@ Make sure they are installed (e.g. via HACS) and added to your Lovelace `resourc
 ---
 ---
 
-### SURVEILLANCE CARD
+<h1 style="color:#8AB4F8; font-weight:700;">SURVEILLANCE CARD</h1>
 
 This card defines a glassmorphic **surveillance overview panel** that shows:
 
@@ -1006,7 +1006,7 @@ Make sure these are installed (typically via HACS) and added to your Lovelace `r
 ---
 ---
 
-### HOUSEKEEPERS CARD
+<h1 style="color:#8AB4F8; font-weight:700;">HOUSEKEEPERS CARD</h1>
 
 <img width="570" height="249" alt="image" src="https://github.com/user-attachments/assets/76938e90-b917-4cd2-9823-b526d186bde6" />
 
@@ -1125,7 +1125,7 @@ Make sure the custom cards are installed (often via HACS) and added to your Love
 ---
 ---
 
-### QUICKFIRE CARD
+<h1 style="color:#8AB4F8; font-weight:700;">QUICKFIRE CARD</h1>
 
 <img width="570" height="146" alt="image" src="https://github.com/user-attachments/assets/4f1a2e80-7060-4c73-9ee9-9d9b996aea6a" />
 
