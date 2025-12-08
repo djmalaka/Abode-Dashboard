@@ -134,9 +134,6 @@ If you find ideas here useful, feel free to ⭐ star the repo or share screensho
 ---
 ---
 
-## 📦 What’s Included in the Abode Dashboard?
-
-
 <h1 style="color:#8AB4F8; font-weight:700;">CLOCK & WEATHER CARD</h1>
 
 <img width="546" height="409" alt="image" src="https://github.com/user-attachments/assets/f47f4701-2a35-4325-925f-70505247392d" />
@@ -199,12 +196,9 @@ in `/config/www` (exposed as `/local/...`) - Provided in the repo
 
 You can use any icon set as long as you update the paths in the JavaScript blocks as appropriate to your setup.
 
----
-
-**🧠 Backend Setup (Required)**
+### 🧠 Backend Setup (Required)
 
 The clock-weather card uses a few *template sensors* and one *REST sensor* for Tomorrow.io.
-
 Add these to `configuration.yaml` (or your preferred split YAML files).
 
 - Template Sensors (Sun, Moon, Weather)**
@@ -242,7 +236,7 @@ template:
 - Tomorrow.io REST Sensor (Hourly Forecast)
 ```yaml
 rest:
-  - resource: https://api.tomorrow.io/v4/weather/forecast?location=52.2677,0.3560&timesteps=1h&units=metric&apikey=!secret tomorrow_api_key _(register at tomorrow.io to obtain the API Key)_
+  - resource: https://api.tomorrow.io/v4/weather/forecast?location=52.2677,0.3560&timesteps=1h&units=metric&apikey=!secret tomorrow_api_key #(register at tomorrow.io to obtain the API Key)
     scan_interval: 1800
     sensor:
       - name: "Tomorrow Raw Hourly"
