@@ -84,13 +84,13 @@ These **must** be replaced with your own Home Assistant entities.
 
 Most UI elements rely on:
 
-- **button-card**  
-- **mod-card**  
-- **browser_mod**  
-- **layout-card**  
-- **stack-in-card**  
-- **card-mod**  
-- **state-switch**  
+- **button-card**  v4.3.0
+- **browser_mod**  v2.6.1
+- **layout-card**  v2.4.6
+- **stack-in-card**  v0.2.0
+- **card-mod**  v3.4.5
+- **slider-entity-row**  v17.4.1
+- **state-switch**  v1.9.6
 - **thermostat-card** (HA native)  
 
 Make sure these are installed before attempting to use any examples.
