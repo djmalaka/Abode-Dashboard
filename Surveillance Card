@@ -1,0 +1,377 @@
+type: custom:mod-card
+style:
+  .: |
+    ha-card {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(151, 87, 167, 0.25), rgba(75, 124, 132, 0.25));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(30px);
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25),
+        inset 0 0 8px rgba(255, 255, 255, 0.03);
+      border: 1.2px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.3s ease;
+    }
+card:
+  type: vertical-stack
+  cards:
+    - type: custom:mod-card
+      style:
+        layout: horizontal
+        justify-content: space-between
+        align-items: center
+        padding: 4px 12px
+        height: 36px
+        background: none
+        box-shadow: none
+        border: none
+        "--mdc-icon-size": 18px
+      card:
+        type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            tap_action:
+              action: none
+            show_icon: false
+            show_state: false
+            show_name: false
+            custom_fields:
+              content: >
+                <span class="surv">Surveillance</span> <span
+                class="rtsp-text">Cameras Actively Streaming</span>
+            styles:
+              card:
+                - background: none
+                - box-shadow: none
+                - height: 28px
+                - padding: 8px
+                - margin: 0
+                - font-size: 16px
+                - font-weight: bold
+                - color: white
+                - justify-content: flex-start
+                - align-items: center
+                - border: none
+              custom_fields:
+                content:
+                  - margin-left: 50px
+                  - display: flex
+                  - flex-direction: row
+                  - align-items: center
+                  - gap: 10px
+                  - overflow: visible
+            card_mod:
+              style: |
+                .surv {
+                  display: inline-block;
+                  transition: transform 0.3s ease-out;
+                  transform: 
+                    {% if is_state('input_boolean.surveillance_trigger', 'on') %}
+                      translateX(-40px);
+                    {% else %}
+                      translateX(75px);
+                    {% endif %}
+                }
+
+                .rtsp-text {
+                  display: inline-block;
+                  font-size: 9px;
+                  font-family: "Consolas", monospace;
+                  line-height: 16px;
+                  opacity: 
+                    {% if is_state('input_boolean.surveillance_trigger', 'on') %}
+                      1;
+                    {% else %}
+                      0;
+                    {% endif %};
+                  transform: 
+                    {% if is_state('input_boolean.surveillance_trigger', 'on') %}
+                      translateX(-20px);
+                    {% else %}
+                      translateX(10px);
+                    {% endif %};
+                  transition: all 0.4s ease-out;
+                  filter: 
+                    {% if is_state('input_boolean.surveillance_trigger', 'on') %}
+                      blur(0px);
+                    {% else %}
+                      blur(4px);
+                    {% endif %};
+                }
+          - type: custom:button-card
+            entity: input_boolean.surveillance_trigger
+            icon: mdi:video-wireless-outline
+            tap_action:
+              action: call-service
+              service: script.surveillance_arm_live
+            hold_action:
+              action: call-service
+              service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.surveillance_trigger
+            show_name: false
+            show_state: false
+            styles:
+              card:
+                - background: transparent
+                - box-shadow: none
+                - padding: 0px
+                - border-radius: 50%
+                - width: 36px
+                - height: 36px
+                - place-self: end
+                - margin-right: 12px
+                - margin-top: "-2px"
+                - display: flex
+                - align-items: center
+                - justify-content: center
+                - cursor: pointer
+              icon:
+                - width: 20px
+                - height: 20px
+                - color: |
+                    [[[
+                      return states['input_boolean.surveillance_trigger'].state === 'on'
+                        ? '#ff4444' : 'rgba(255, 255, 255, 0.5)';
+                    ]]]
+                - animation: |
+                    [[[
+                      return states['input_boolean.surveillance_trigger'].state === 'on'
+                        ? 'blink 1.2s infinite' : 'none';
+                    ]]]
+            style:
+              .: |
+                @keyframes blink {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.3; }
+                }
+
+    - type: custom:button-card
+      name: null
+      show_icon: false
+      show_state: false
+      styles:
+        card:
+          - background: none
+          - box-shadow: none
+          - height: 20px
+          - width: 3350%
+          - border-bottom: solid 1px red
+          - padding-bottom: 2px
+          - padding-top: 0px
+          - margin-top: "-28px"
+          - margin-left: 10px
+
+    - type: custom:mod-card
+      style:
+        .: |
+          ha-card {
+            margin-top: -16px;  # reduces the space between red line and cameras
+          }
+      card:
+        type: vertical-stack
+        cards:
+          - type: custom:layout-card
+            layout_type: grid
+            layout:
+              grid-template-columns: minmax(0,1fr) minmax(0,3fr)
+              grid-auto-flow: column
+              grid-gap: 0px
+            cards:
+              - type: custom:mod-card
+                style:
+                  .: >
+                    ha-card { margin:0; border-radius:14px;
+                    background:rgba(255,255,255,0.04); overflow:hidden; }
+                  hui-picture-entity-card$: |
+                    ha-card { aspect-ratio: 100/98; }
+                    img, ha-camera-stream, ha-camera-stream video {
+                      object-fit: cover !important;
+                      object-position: center center !important;
+                      width: 100% !important;
+                      height: 100% !important;
+                    }
+                card:
+                  type: picture-entity
+                  entity: camera.cam_entry_1_snapshot
+                  camera_view: auto
+                  show_name: false
+                  show_state: false
+                  tap_action:
+                    action: more-info
+                    entity: camera.cam_entry_1_live
+
+              - type: custom:mod-card
+                style:
+                  .: |
+                    ha-card {
+                      margin: 0;
+                      border-radius: 14px;
+                      background: rgba(255,255,255,0.04);
+                      overflow: hidden;
+                    }
+                  hui-picture-entity-card$: |
+                    ha-card {
+                      aspect-ratio: 400/123;
+                    }
+
+                    ha-camera-stream,
+                    ha-camera-stream video {
+                      width: 100% !important;
+                      height: 100% !important;
+                      object-fit: cover !important;
+                      object-position: center center !important;
+                    }
+
+                    ha-camera-stream video {
+                      transform: scale(1) !important;
+                    }
+                card:
+                  type: picture-entity
+                  entity: camera.cam_outdoor_1_live
+                  camera_view: live
+                  show_name: false
+                  show_state: false
+
+          - type: custom:layout-card
+            layout_type: grid
+            layout:
+              grid-template-columns: repeat(4, minmax(0, 1fr))
+              grid-gap: 0px
+            cards:
+
+              # Indoor camera 1
+              - type: custom:mod-card
+                style:
+                  .: >
+                    ha-card { margin-top: -20px; margin-bottom: -4px;
+                    border-radius:14px; background:rgba(255,255,255,0.04);
+                    overflow:hidden; }
+                  hui-picture-entity-card$: >
+                    ha-card { aspect-ratio: 4/3; }
+                    img, ha-camera-stream { object-fit:cover!important;
+                    width:100%!important; height:100%!important; }
+                card:
+                  type: custom:state-switch
+                  entity: input_boolean.surveillance_trigger
+                  states:
+                    "on":
+                      type: picture-entity
+                      entity: camera.cam_indoor_1_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+                        entity: camera.cam_indoor_1_live
+                    "off":
+                      type: picture-entity
+                      entity: camera.cam_indoor_1_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+
+              # Indoor camera 2
+              - type: custom:mod-card
+                style:
+                  .: >
+                    ha-card { margin-top: -20px; margin-bottom: -4px;
+                    border-radius:14px; background:rgba(255,255,255,0.04);
+                    overflow:hidden; }
+                  hui-picture-entity-card$: >
+                    ha-card { aspect-ratio: 4/3; }
+                    img, ha-camera-stream { object-fit:cover!important;
+                    width:100%!important; height:100%!important; }
+                card:
+                  type: custom:state-switch
+                  entity: input_boolean.surveillance_trigger
+                  states:
+                    "on":
+                      type: picture-entity
+                      entity: camera.cam_indoor_2_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+                        entity: camera.cam_indoor_2_live
+                    "off":
+                      type: picture-entity
+                      entity: camera.cam_indoor_2_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+
+              # Indoor camera 3
+              - type: custom:mod-card
+                style:
+                  .: >
+                    ha-card { margin-top: -20px; margin-bottom: -4px;
+                    border-radius:14px; background:rgba(255,255,255,0.04);
+                    overflow:hidden; }
+                  hui-picture-entity-card$: >
+                    ha-card { aspect-ratio: 4/3; }
+                    img, ha-camera-stream { object-fit:cover!important;
+                    width:100%!important; height:100%!important; }
+                card:
+                  type: custom:state-switch
+                  entity: input_boolean.surveillance_trigger
+                  states:
+                    "on":
+                      type: picture-entity
+                      entity: camera.cam_indoor_3_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+                        entity: camera.cam_indoor_3_live
+                    "off":
+                      type: picture-entity
+                      entity: camera.cam_indoor_3_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+
+              # Indoor camera 4
+              - type: custom:mod-card
+                style:
+                  .: >
+                    ha-card { margin-top: -20px; margin-bottom: -4px;
+                    border-radius:14px; background:rgba(255,255,255,0.04);
+                    overflow:hidden; }
+                  hui-picture-entity-card$: >
+                    ha-card { aspect-ratio: 4/3; }
+                    img, ha-camera-stream { object-fit:cover!important;
+                    width:100%!important; height:100%!important; }
+                card:
+                  type: custom:state-switch
+                  entity: input_boolean.surveillance_trigger
+                  states:
+                    "on":
+                      type: picture-entity
+                      entity: camera.cam_indoor_4_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
+                        entity: camera.cam_indoor_4_live
+                    "off":
+                      type: picture-entity
+                      entity: camera.cam_indoor_4_snapshot
+                      camera_view: auto
+                      show_name: false
+                      show_state: false
+                      tap_action:
+                        action: more-info
