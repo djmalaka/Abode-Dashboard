@@ -187,7 +187,8 @@ Install via HACS (or equivalent):
 
 **Required assets**
 
-# Animated SVG weather icons in `/config/www` (exposed as `/local/...`) - Provided in the repo
+# Animated SVG weather icons 
+in `/config/www` (exposed as `/local/...`) - Provided in the repo
 
 - Line icons for the big header:
   - `/local/weather-icons/weather-icons-master/design/line/animation-ready/<icon>.svg`
