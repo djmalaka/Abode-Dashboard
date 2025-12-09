@@ -317,7 +317,7 @@ Electricity + gas cost sensors:
 - `sensor.electricity_cost_today` — *Used for the 24h electricity graph*  
 - `sensor.gas_cost_today` — *Used for the 24h gas graph*
 
-> These typically come from the **Bright / Hildebrand Glow DCC** integration.
+> These typically come from the **Bright / Hildebrand Glow DCC** integration. Will require installing Bright app on your phone, creating a Glowmarkt account through the app, linking the smart meter in the house to Bright app, installing Hildebrand integration on HA with Glowmarkt username and password (works with many UK energy providers).
 
 ---
 
