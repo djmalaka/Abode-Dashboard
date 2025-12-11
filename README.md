@@ -2,7 +2,8 @@
 
 ![Screenshot_20251208_223111_Fully Kiosk Browser](https://github.com/user-attachments/assets/0ee04375-9042-4334-9e10-87b6ade4f304)
 
-[![Watch the video](https://img.youtube.com/vi/XUM2vB1NydU/maxresdefault.jpg)](https://www.youtube.com/watch?v=XUM2vB1NydU)
+[![Video Title](path/to/custom-thumbnail-with-play-button.png)](https://youtu.be/XUM2vB1NydU)
+
 
 
 **Conceptualised & designed by Malaka Jayawardene.**
